@@ -49,7 +49,10 @@ function LoginPage() {
 
       if (data.role === 'FLEET_MANAGER') {
         navigate('/fleet/vehicles')
-      } else {
+      } else if (data.role === 'SAFETY_OFFICER') {
+        navigate('/safety/drivers')
+      }
+      else {
         navigate('/dashboard')
       }
     } catch (error) {

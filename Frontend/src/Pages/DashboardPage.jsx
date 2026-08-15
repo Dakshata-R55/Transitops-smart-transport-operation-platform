@@ -29,6 +29,16 @@ function DashboardPage() {
           </Link>
         )}
 
+        {role === 'SAFETY_OFFICER' && (
+          <Link
+            to="/safety/drivers"
+            className="auth-button"
+            style={{ display: 'inline-block', textDecoration: 'none', marginBottom: '12px' }}
+          >
+            Manage Drivers
+          </Link>
+        )}
+
         <button
           type="button"
           className="auth-button"

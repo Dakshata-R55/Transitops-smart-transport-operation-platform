@@ -1,6 +1,6 @@
 export const ROLES = [
     { value: 'FLEET_MANAGER', label: 'Fleet Manager' },
-    { value: 'DRIVER', label: 'Driver' },
+    { value: 'DISPATCHER', label: 'Dispatcher' },
     { value: 'SAFETY_OFFICER', label: 'Safety Officer' },
     { value: 'FINANCIAL_ANALYST', label: 'Financial Analyst' },
   ]
@@ -21,13 +21,10 @@ export const ROLES = [
       { name: 'locationBranch', label: 'Location / Branch', type: 'text', required: true },
     ],
   
-    DRIVER: [
-      { name: 'email', label: 'Work Email', type: 'email', required: true },
+    // Dispatcher — simple signup only
+    DISPATCHER: [
+      { name: 'email', label: 'Email', type: 'email', required: true },
       { name: 'phone', label: 'Phone Number', type: 'tel', required: true },
-      { name: 'employeeId', label: 'Employee ID / Driver ID', type: 'text', required: true },
-      { name: 'drivingLicenseNumber', label: 'Driving License Number', type: 'text', required: true },
-      { name: 'licenseExpiryDate', label: 'License Expiry Date', type: 'date', required: true },
-      { name: 'emergencyContact', label: 'Emergency Contact', type: 'tel', required: true },
     ],
   
     SAFETY_OFFICER: [

@@ -3,9 +3,10 @@ import LoginPage from './Pages/LoginPage'
 import SignUpPage from './Pages/SignUpPage'
 import DashboardPage from './Pages/DashboardPage'
 import FleetVehiclesPage from './Pages/FleetVehiclesPage'
+import SafetyOfficerDriversPage from './Pages/SafetyOfficerDriversPage'
 import UnauthorizedPage from './Pages/UnauthorizedPage'
 import ProtectedRoute from './Components/ProtectedRoute'
-import { FleetManagerRoute } from './Components/RoleRoute'
+import { FleetManagerRoute, SafetyOfficerRoute } from './Components/RoleRoute'
 
 function App() {
   return (
@@ -30,6 +31,15 @@ function App() {
             <FleetManagerRoute>
               <FleetVehiclesPage />
             </FleetManagerRoute>
+          }
+        />
+
+        <Route
+          path="/safety/drivers"
+          element={
+            <SafetyOfficerRoute>
+              <SafetyOfficerDriversPage />
+            </SafetyOfficerRoute>
           }
         />
 

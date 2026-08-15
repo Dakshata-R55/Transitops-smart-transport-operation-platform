@@ -6,23 +6,20 @@ import { ROLES, ROLE_FIELDS } from '../config/roleSignupFields'
 
 // Empty starting values for ALL possible fields
 const EMPTY_FORM = {
-  fullName: '',
-  email: '',
-  phone: '',
-  password: '',
-  confirmPassword: '',
-  employeeId: '',
-  company: '',
-  fleetSize: '',
-  locationBranch: '',
-  drivingLicenseNumber: '',
-  licenseExpiryDate: '',
-  emergencyContact: '',
-  safetyCertification: '',
-  departmentBranch: '',
-  department: '',
-  financeId: '',
-}
+    fullName: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: '',
+    employeeId: '',
+    company: '',
+    fleetSize: '',
+    locationBranch: '',
+    safetyCertification: '',
+    departmentBranch: '',
+    department: '',
+    financeId: '',
+  }
 
 function SignUpPage() {
   const navigate = useNavigate()
@@ -120,14 +117,7 @@ function SignUpPage() {
       }
     }
   
-    if (role === 'DRIVER') {
-      payload.driverProfile = {
-        employeeId: form.employeeId.trim(),
-        licenseNumber: form.drivingLicenseNumber.trim(),
-        licenseExpiryDate: form.licenseExpiryDate,
-        emergencyContact: form.emergencyContact.trim(),
-      }
-    }
+    // DISPATCHER — no extra profile, only basic fields above
   
     if (role === 'SAFETY_OFFICER') {
       payload.safetyOfficerProfile = {

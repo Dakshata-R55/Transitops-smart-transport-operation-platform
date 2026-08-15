@@ -14,11 +14,18 @@ function RoleRoute({ allowedRoles, children }) {
   return children
 }
 
-// Wrapper: must be logged in AND have correct role
 export function FleetManagerRoute({ children }) {
   return (
     <ProtectedRoute>
       <RoleRoute allowedRoles={['FLEET_MANAGER']}>{children}</RoleRoute>
+    </ProtectedRoute>
+  )
+}
+
+export function SafetyOfficerRoute({ children }) {
+  return (
+    <ProtectedRoute>
+      <RoleRoute allowedRoles={['SAFETY_OFFICER']}>{children}</RoleRoute>
     </ProtectedRoute>
   )
 }
