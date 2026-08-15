@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthLayout from '../components/AuthLayout'
+import { useLocation } from 'react-router-dom'
 
 function LoginPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const successMessage = location.state?.message
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -64,6 +67,11 @@ function LoginPage() {
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
         {formError && <div className="form-error">{formError}</div>}
 
+        {successMessage && (
+  <div className="form-error" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
+    {successMessage}
+  </div>
+)}
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input

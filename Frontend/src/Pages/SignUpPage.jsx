@@ -1,36 +1,45 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import AuthLayout from '../components/AuthLayout'
+import AuthLayout from '../Components/AuthLayout'
+import { signup } from '../services/authService'
 
-// Roles for RBAC — backend will define these later
 const ROLES = [
-  { value: 'VIEWER', label: 'Viewer' },
-  { value: 'OPERATOR', label: 'Operator' },
-  { value: 'ADMIN', label: 'Admin' },
+  { value: 'FLEET_MANAGER', label: 'Fleet Manager' },
+  { value: 'DRIVER', label: 'Driver' },
+  { value: 'SAFETY_OFFICER', label: 'Safety Officer' },
+  { value: 'FINANCIAL_ANALYST', label: 'Financial Analyst' },
 ]
 
 function SignUpPage() {
   const navigate = useNavigate()
 
-  const [name, setName] = useState('')
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [role, setRole] = useState('VIEWER')
+  const [role, setRole] = useState('DRIVER')
   const [errors, setErrors] = useState({})
+  const [formError, setFormError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   function validate() {
     const newErrors = {}
 
-    if (!name.trim()) {
-      newErrors.name = 'Name is required'
+    if (!fullName.trim()) {
+      newErrors.fullName = 'Full name is required'
     }
 
     if (!email.trim()) {
       newErrors.email = 'Email is required'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = 'Enter a valid email address'
+    }
+
+    if (!phone.trim()) {
+      newErrors.phone = 'Phone number is required'
+    } else if (!/^\d{10}$/.test(phone.trim())) {
+      newErrors.phone = 'Enter a valid 10-digit phone number'
     }
 
     if (!password) {
@@ -45,31 +54,40 @@ function SignUpPage() {
       newErrors.confirmPassword = 'Passwords do not match'
     }
 
+    if (!role) {
+      newErrors.role = 'Please select a role'
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
   async function handleSubmit(event) {
     event.preventDefault()
+    setFormError('')
 
     if (!validate()) return
 
     setIsSubmitting(true)
 
-    // TODO: Replace with real API call later
-    await new Promise((resolve) => setTimeout(resolve, 800))
+    try {
+      await signup({
+        fullName: fullName.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        password,
+        role,
+      })
 
-    console.log('Sign up attempt:', {
-      name,
-      email,
-      role,
-      password: '***',
-    })
-
-    // Fake success — send user to login
-    navigate('/login')
-
-    setIsSubmitting(false)
+      // Success → go to login
+      navigate('/login', {
+        state: { message: 'Account created successfully. Please sign in.' },
+      })
+    } catch (error) {
+      setFormError(error.message || 'Sign up failed. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -83,18 +101,22 @@ function SignUpPage() {
       }
     >
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
+        {formError && <div className="form-error">{formError}</div>}
+
         <div className="form-group">
-          <label htmlFor="name">Full name</label>
+          <label htmlFor="fullName">Full name</label>
           <input
-            id="name"
+            id="fullName"
             type="text"
             autoComplete="name"
-            placeholder="John Doe"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className={errors.name ? 'input-error' : ''}
+            placeholder="Alex Kumar"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            className={errors.fullName ? 'input-error' : ''}
           />
-          {errors.name && <span className="field-error">{errors.name}</span>}
+          {errors.fullName && (
+            <span className="field-error">{errors.fullName}</span>
+          )}
         </div>
 
         <div className="form-group">
@@ -103,7 +125,7 @@ function SignUpPage() {
             id="email"
             type="email"
             autoComplete="email"
-            placeholder="you@example.com"
+            placeholder="alex@company.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className={errors.email ? 'input-error' : ''}
@@ -112,11 +134,27 @@ function SignUpPage() {
         </div>
 
         <div className="form-group">
+          <label htmlFor="phone">Phone</label>
+          <input
+            id="phone"
+            type="tel"
+            autoComplete="tel"
+            placeholder="9876543210"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+            maxLength={10}
+            className={errors.phone ? 'input-error' : ''}
+          />
+          {errors.phone && <span className="field-error">{errors.phone}</span>}
+        </div>
+
+        <div className="form-group">
           <label htmlFor="role">Role</label>
           <select
             id="role"
             value={role}
             onChange={(e) => setRole(e.target.value)}
+            className={errors.role ? 'input-error' : ''}
           >
             {ROLES.map((r) => (
               <option key={r.value} value={r.value}>
@@ -124,9 +162,7 @@ function SignUpPage() {
               </option>
             ))}
           </select>
-          <span className="field-error" style={{ color: 'var(--text)', fontSize: '12px' }}>
-            Role selection is for UI preview only — backend will assign roles later.
-          </span>
+          {errors.role && <span className="field-error">{errors.role}</span>}
         </div>
 
         <div className="form-group">
