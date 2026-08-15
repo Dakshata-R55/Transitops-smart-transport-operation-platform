@@ -51,6 +51,8 @@ function LoginPage() {
         navigate('/fleet/vehicles')
       } else if (data.role === 'SAFETY_OFFICER') {
         navigate('/safety/drivers')
+      }else if (data.role === 'DISPATCHER') {
+        navigate('/dispatcher/trips')
       }
       else {
         navigate('/dashboard')

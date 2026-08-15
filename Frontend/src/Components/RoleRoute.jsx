@@ -30,4 +30,12 @@ export function SafetyOfficerRoute({ children }) {
   )
 }
 
+export function DispatcherRoute({ children }) {
+  return (
+    <ProtectedRoute>
+      <RoleRoute allowedRoles={['DISPATCHER']}>{children}</RoleRoute>
+    </ProtectedRoute>
+  )
+}
+
 export default RoleRoute

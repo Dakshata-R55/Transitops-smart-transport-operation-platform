@@ -11,6 +11,16 @@ let mockDrivers = [
     safetyScore: 100,
     status: 'AVAILABLE',
   },
+  {
+    id: 2,
+    fullName: 'Amit Patel',
+    licenseNumber: 'MH-14-2024-002',
+    licenseCategory: 'LMV',
+    licenseExpiryDate: '2026-12-31',
+    contactNumber: '9123456780',
+    safetyScore: 95,
+    status: 'ON_TRIP',
+  },
 ]
 
 const USE_MOCK = true
@@ -58,4 +68,9 @@ export async function getDrivers(filters = {}) {
   const data = await response.json()
   if (!response.ok) throw new Error(data?.message || 'Failed to load drivers')
   return data
+}
+
+// For Dispatcher trip form — only AVAILABLE drivers
+export async function getAvailableDrivers() {
+  return getDrivers({ status: 'AVAILABLE' })
 }

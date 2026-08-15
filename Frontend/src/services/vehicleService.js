@@ -1,6 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
-// Temporary mock data until backend vehicle API exists
 let mockVehicles = [
   {
     id: 1,
@@ -21,6 +20,16 @@ let mockVehicles = [
     odometer: 85000,
     acqCost: 900000,
     status: 'IN_MAINTENANCE',
+  },
+  {
+    id: 3,
+    registrationNo: 'MH-20-EF-9012',
+    name: 'Cargo Truck 03',
+    type: 'TRUCK',
+    capacity: 20,
+    odometer: 95000,
+    acqCost: 1800000,
+    status: 'ACTIVE',
   },
 ]
 
@@ -70,4 +79,9 @@ export async function getVehicles(filters = {}) {
   const data = await response.json()
   if (!response.ok) throw new Error(data?.message || 'Failed to load vehicles')
   return data
+}
+
+// For Dispatcher trip form — only ACTIVE vehicles
+export async function getAvailableVehicles() {
+  return getVehicles({ status: 'ACTIVE' })
 }

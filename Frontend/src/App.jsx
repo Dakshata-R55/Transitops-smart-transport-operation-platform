@@ -4,9 +4,14 @@ import SignUpPage from './Pages/SignUpPage'
 import DashboardPage from './Pages/DashboardPage'
 import FleetVehiclesPage from './Pages/FleetVehiclesPage'
 import SafetyOfficerDriversPage from './Pages/SafetyOfficerDriversPage'
+import DispatcherTripsPage from './Pages/DispatcherTripsPage'
 import UnauthorizedPage from './Pages/UnauthorizedPage'
 import ProtectedRoute from './Components/ProtectedRoute'
-import { FleetManagerRoute, SafetyOfficerRoute } from './Components/RoleRoute'
+import {
+  FleetManagerRoute,
+  SafetyOfficerRoute,
+  DispatcherRoute,
+} from './Components/RoleRoute'
 
 function App() {
   return (
@@ -40,6 +45,15 @@ function App() {
             <SafetyOfficerRoute>
               <SafetyOfficerDriversPage />
             </SafetyOfficerRoute>
+          }
+        />
+
+        <Route
+          path="/dispatcher/trips"
+          element={
+            <DispatcherRoute>
+              <DispatcherTripsPage />
+            </DispatcherRoute>
           }
         />
 

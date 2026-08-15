@@ -39,6 +39,16 @@ function DashboardPage() {
           </Link>
         )}
 
+        {role === 'DISPATCHER' && (
+          <Link
+            to="/dispatcher/trips"
+            className="auth-button"
+            style={{ display: 'inline-block', textDecoration: 'none', marginBottom: '12px' }}
+          >
+            Manage Trips
+          </Link>
+        )}
+
         <button
           type="button"
           className="auth-button"
