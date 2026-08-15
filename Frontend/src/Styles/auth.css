@@ -9,7 +9,9 @@
   
   .auth-card {
     width: 100%;
-    max-width: 420px;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
     padding: 32px;
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -33,6 +35,15 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+  }
+  
+  .form-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-h);
+    margin: 0;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
   }
   
   .form-group {
@@ -64,7 +75,8 @@
     outline-offset: 1px;
   }
   
-  .form-group input.input-error {
+  .form-group input.input-error,
+  .form-group select.input-error {
     border-color: #ef4444;
   }
   
