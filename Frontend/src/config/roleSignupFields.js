@@ -5,14 +5,12 @@ export const ROLES = [
     { value: 'FINANCIAL_ANALYST', label: 'Financial Analyst' },
   ]
   
-  // Fields shown for EVERY role
   export const COMMON_FIELDS = [
     { name: 'fullName', label: 'Full Name', type: 'text', required: true },
     { name: 'password', label: 'Password', type: 'password', required: true },
     { name: 'confirmPassword', label: 'Confirm Password', type: 'password', required: true },
   ]
   
-  // Extra fields per role (shown after role is selected)
   export const ROLE_FIELDS = {
     FLEET_MANAGER: [
       { name: 'email', label: 'Work Email', type: 'email', required: true },
@@ -24,12 +22,11 @@ export const ROLES = [
     ],
   
     DRIVER: [
-      { name: 'email', label: 'Work Email', type: 'email', required: false },
-      { name: 'phone', label: 'Phone Number', type: 'tel', required: false },
+      { name: 'email', label: 'Work Email', type: 'email', required: true },
+      { name: 'phone', label: 'Phone Number', type: 'tel', required: true },
       { name: 'employeeId', label: 'Employee ID / Driver ID', type: 'text', required: true },
       { name: 'drivingLicenseNumber', label: 'Driving License Number', type: 'text', required: true },
       { name: 'licenseExpiryDate', label: 'License Expiry Date', type: 'date', required: true },
-      { name: 'vehicleAssigned', label: 'Vehicle Assigned', type: 'text', required: false },
       { name: 'emergencyContact', label: 'Emergency Contact', type: 'tel', required: true },
     ],
   

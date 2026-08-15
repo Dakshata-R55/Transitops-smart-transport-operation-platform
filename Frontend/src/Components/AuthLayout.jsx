@@ -1,4 +1,4 @@
-import '../styles/auth.css'
+import '../Styles/auth.css'
 
 /**
  * Wraps Login and SignUp pages with the same card layout.

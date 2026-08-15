@@ -17,7 +17,6 @@ const EMPTY_FORM = {
   locationBranch: '',
   drivingLicenseNumber: '',
   licenseExpiryDate: '',
-  vehicleAssigned: '',
   emergencyContact: '',
   safetyCertification: '',
   departmentBranch: '',
@@ -97,19 +96,12 @@ function SignUpPage() {
       }
     }
 
-    // Driver special rule: need email OR phone (at least one)
-    if (role === 'DRIVER') {
-      if (!form.email.trim() && !form.phone.trim()) {
-        newErrors.email = 'Work email or phone is required'
-        newErrors.phone = 'Work email or phone is required'
-      }
-    }
+    
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  // Build JSON to send to backend
   function buildPayload() {
     const payload = {
       fullName: form.fullName.trim(),
@@ -118,17 +110,43 @@ function SignUpPage() {
       password: form.password,
       role,
     }
-
-    // Extra role-specific fields (backend may ignore until they add support)
-    const roleDetails = {}
-    const fields = ROLE_FIELDS[role] || []
-
-    for (const field of fields) {
-      if (field.name === 'email' || field.name === 'phone') continue
-      roleDetails[field.name] = form[field.name]
+  
+    if (role === 'FLEET_MANAGER') {
+      payload.fleetManagerProfile = {
+        employeeId: form.employeeId.trim(),
+        company: form.company.trim(),
+        fleetSize: Number(form.fleetSize),
+        branch: form.locationBranch.trim(),
+      }
     }
-
-    payload.roleDetails = roleDetails
+  
+    if (role === 'DRIVER') {
+      payload.driverProfile = {
+        employeeId: form.employeeId.trim(),
+        licenseNumber: form.drivingLicenseNumber.trim(),
+        licenseExpiryDate: form.licenseExpiryDate,
+        emergencyContact: form.emergencyContact.trim(),
+      }
+    }
+  
+    if (role === 'SAFETY_OFFICER') {
+      payload.safetyOfficerProfile = {
+        employeeId: form.employeeId.trim(),
+        company: form.company.trim(),
+        certification: form.safetyCertification.trim() || null,
+        department: form.departmentBranch.trim(),
+      }
+    }
+  
+    if (role === 'FINANCIAL_ANALYST') {
+      payload.financialAnalystProfile = {
+        employeeId: form.employeeId.trim(),
+        company: form.company.trim(),
+        department: form.department.trim(),
+        financeId: form.financeId.trim(),
+      }
+    }
+  
     return payload
   }
 
