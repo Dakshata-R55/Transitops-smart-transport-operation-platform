@@ -4,6 +4,7 @@ import com.Transitops.Spring_project.dto.CreateVehicleRequest;
 import com.Transitops.Spring_project.dto.VehicleResponse;
 import com.Transitops.Spring_project.service.VehicleService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,11 +19,13 @@ public class VehicleController {
         this.vehicleService = vehicleService;
     }
 
+    @PreAuthorize("hasRole('FLEET_MANAGER')")
     @PostMapping
     public VehicleResponse createVehicle(@Valid @RequestBody CreateVehicleRequest request) {
         return vehicleService.createVehicle(request);
     }
 
+    @PreAuthorize("hasAnyRole('FLEET_MANAGER', 'DISPATCHER', 'SAFETY_OFFICER')")
     @GetMapping
     public List<VehicleResponse> getAllVehicles() {
         return vehicleService.getAllVehicles();

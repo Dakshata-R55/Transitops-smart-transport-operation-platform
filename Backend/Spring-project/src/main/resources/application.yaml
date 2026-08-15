@@ -9,5 +9,9 @@ spring:
       ddl-auto: update
     show-sql: true
 
+jwt:
+  secret: transitops-super-secret-key-change-in-production-min-32-chars
+  expiration-ms: 86400000
+
 server:
   port: 8080
