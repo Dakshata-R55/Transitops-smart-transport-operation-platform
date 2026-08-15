@@ -1,3 +1,16 @@
 spring:
   application:
     name: Spring-project
+  datasource:
+    url: jdbc:h2:mem:transitops
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+server:
+  port: 8080
