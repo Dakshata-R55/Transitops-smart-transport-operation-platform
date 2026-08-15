@@ -3,6 +3,7 @@ package com.Transitops.Spring_project.service;
 import com.Transitops.Spring_project.dto.*;
 import com.Transitops.Spring_project.model.*;
 import com.Transitops.Spring_project.repository.*;
+import com.Transitops.Spring_project.security.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,18 +17,21 @@ public class AuthService {
     private final SafetyOfficerProfileRepository safetyOfficerProfileRepository;
     private final FinancialAnalystProfileRepository financialAnalystProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public AuthService(
             UserRepository userRepository,
             FleetManagerProfileRepository fleetManagerProfileRepository,
             SafetyOfficerProfileRepository safetyOfficerProfileRepository,
             FinancialAnalystProfileRepository financialAnalystProfileRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService) {
         this.userRepository = userRepository;
         this.fleetManagerProfileRepository = fleetManagerProfileRepository;
         this.safetyOfficerProfileRepository = safetyOfficerProfileRepository;
         this.financialAnalystProfileRepository = financialAnalystProfileRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public AuthResponse signup(SignupRequest request) {
@@ -54,7 +58,7 @@ public class AuthService {
             case FINANCIAL_ANALYST -> saveFinancialAnalystProfile(user, request.getFinancialAnalystProfile());
         }
 
-        return toResponse(user, "Signup successful");
+        return toResponse(user, "Signup successful", null);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -68,7 +72,8 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
 
-        return toResponse(user, "Login successful");
+        String token = jwtService.generateToken(user);
+        return toResponse(user, "Login successful", token);
     }
 
     private void validateDispatcherSignup(SignupRequest request) {
@@ -154,7 +159,7 @@ public class AuthService {
         return value.trim();
     }
 
-    private AuthResponse toResponse(User user, String message) {
+    private AuthResponse toResponse(User user, String message, String token) {
         return AuthResponse.builder()
                 .id(user.getId())
                 .fullName(user.getFullName())
@@ -162,6 +167,7 @@ public class AuthService {
                 .phone(user.getPhone())
                 .role(user.getRole())
                 .message(message)
+                .token(token)
                 .build();
     }
 }
