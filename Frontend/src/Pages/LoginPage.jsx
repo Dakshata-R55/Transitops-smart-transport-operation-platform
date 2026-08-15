@@ -1,12 +1,14 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import AuthLayout from '../Components/AuthLayout'
-import { useLocation } from 'react-router-dom'
+import { login } from '../services/authService'
+import { useAuth } from '../context/AuthContext'
 
 function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const successMessage = location.state?.message
+  const { loginUser } = useAuth()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -14,7 +16,6 @@ function LoginPage() {
   const [formError, setFormError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Simple client-side validation (no API yet)
   function validate() {
     const newErrors = {}
 
@@ -42,16 +43,20 @@ function LoginPage() {
 
     setIsSubmitting(true)
 
-    // TODO: Replace with real API call later
-    // Simulates network delay
-    await new Promise((resolve) => setTimeout(resolve, 800))
+    try {
+      const data = await login(email.trim(), password)
+      loginUser(data)
 
-    console.log('Login attempt:', { email, password: '***' })
-
-    // Fake success for now — go to dashboard
-    navigate('/dashboard')
-
-    setIsSubmitting(false)
+      if (data.role === 'FLEET_MANAGER') {
+        navigate('/fleet/vehicles')
+      } else {
+        navigate('/dashboard')
+      }
+    } catch (error) {
+      setFormError(error.message || 'Login failed. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -68,10 +73,14 @@ function LoginPage() {
         {formError && <div className="form-error">{formError}</div>}
 
         {successMessage && (
-  <div className="form-error" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
-    {successMessage}
-  </div>
-)}
+          <div
+            className="form-error"
+            style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}
+          >
+            {successMessage}
+          </div>
+        )}
+
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input
