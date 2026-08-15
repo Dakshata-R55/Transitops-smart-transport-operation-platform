@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { createVehicle, getVehicles } from '../services/vehicleService'
 import '../Styles/vehicles.css'
 
 const VEHICLE_TYPES = ['BUS', 'TRUCK', 'VAN', 'MINI_BUS']
-const VEHICLE_STATUSES = ['ACTIVE', 'IN_MAINTENANCE', 'OUT_OF_SERVICE', 'RETIRED']
+const VEHICLE_STATUSES = ['AVAILABLE', 'ON_TRIP', 'IN_SHOP', 'RETIRED']
 
 const EMPTY_FORM = {
   registrationNo: '',
@@ -14,7 +14,7 @@ const EMPTY_FORM = {
   capacity: '',
   odometer: '',
   acqCost: '',
-  status: 'ACTIVE',
+  status: 'AVAILABLE',
 }
 
 function FleetVehiclesPage() {
@@ -121,9 +121,18 @@ function FleetVehiclesPage() {
               Logged in as {user?.fullName || user?.email}
             </p>
           </div>
-          <button type="button" className="auth-button" onClick={handleLogout}>
-            Logout
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <Link
+              to="/fleet/maintenance"
+              className="auth-button"
+              style={{ textDecoration: 'none' }}
+            >
+              Maintenance Log
+            </Link>
+            <button type="button" className="auth-button" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
         </div>
 
         <div className="vehicles-card">

@@ -21,12 +21,12 @@ function DashboardPage() {
 
         {role === 'FLEET_MANAGER' && (
           <Link
-            to="/fleet/vehicles"
-            className="auth-button"
-            style={{ display: 'inline-block', textDecoration: 'none', marginBottom: '12px' }}
-          >
-            Manage Vehicles
-          </Link>
+          to="/fleet/maintenance"
+          className="auth-button"
+          style={{ display: 'inline-block', textDecoration: 'none', marginBottom: '12px' }}
+        >
+          Maintenance Log
+        </Link>
         )}
 
         {role === 'SAFETY_OFFICER' && (

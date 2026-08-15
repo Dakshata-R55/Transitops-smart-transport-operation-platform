@@ -1,34 +1,56 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import {
+  saveAuth,
+  clearAuth,
+  getStoredUser,
+  getToken,
+  isAuthenticated,
+} from '../utils/tokenStorage'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
+  const [token, setToken] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Restore session on refresh
   useEffect(() => {
-    const saved = localStorage.getItem('transitops_user')
-    if (saved) {
-      setUser(JSON.parse(saved))
+    const savedUser = getStoredUser()
+    const savedToken = getToken()
+
+    if (savedUser && savedToken) {
+      setUser(savedUser)
+      setToken(savedToken)
     }
+
     setIsLoading(false)
   }, [])
 
-  function loginUser(userData) {
+  function loginUser(authResponse) {
+    const userData = {
+      id: authResponse.id,
+      fullName: authResponse.fullName,
+      email: authResponse.email,
+      phone: authResponse.phone,
+      role: authResponse.role,
+    }
+
+    saveAuth(userData, authResponse.token)
     setUser(userData)
-    localStorage.setItem('transitops_user', JSON.stringify(userData))
+    setToken(authResponse.token)
   }
 
   function logoutUser() {
+    clearAuth()
     setUser(null)
-    localStorage.removeItem('transitops_user')
+    setToken(null)
   }
 
   const value = {
     user,
+    token,
     role: user?.role ?? null,
-    isAuthenticated: !!user,
+    isAuthenticated: isAuthenticated(),
     isLoading,
     loginUser,
     logoutUser,

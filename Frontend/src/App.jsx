@@ -7,6 +7,7 @@ import SafetyOfficerDriversPage from './Pages/SafetyOfficerDriversPage'
 import DispatcherTripsPage from './Pages/DispatcherTripsPage'
 import UnauthorizedPage from './Pages/UnauthorizedPage'
 import ProtectedRoute from './Components/ProtectedRoute'
+import FleetMaintenancePage from './Pages/FleetMaintenancePage'
 import {
   FleetManagerRoute,
   SafetyOfficerRoute,
@@ -38,6 +39,16 @@ function App() {
             </FleetManagerRoute>
           }
         />
+
+<Route
+  path="/fleet/maintenance"
+  element={
+    <FleetManagerRoute>
+      <FleetMaintenancePage />
+    </FleetManagerRoute>
+  }
+/>
+
 
         <Route
           path="/safety/drivers"

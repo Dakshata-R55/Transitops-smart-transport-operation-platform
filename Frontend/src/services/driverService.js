@@ -1,76 +1,55 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+import { authFetch } from './apiClient'
 
-let mockDrivers = [
-  {
-    id: 1,
-    fullName: 'Rahul Sharma',
-    licenseNumber: 'MH-12-2024-001',
-    licenseCategory: 'HMV',
-    licenseExpiryDate: '2027-06-30',
-    contactNumber: '9876543210',
-    safetyScore: 100,
-    status: 'AVAILABLE',
-  },
-  {
-    id: 2,
-    fullName: 'Amit Patel',
-    licenseNumber: 'MH-14-2024-002',
-    licenseCategory: 'LMV',
-    licenseExpiryDate: '2026-12-31',
-    contactNumber: '9123456780',
-    safetyScore: 95,
-    status: 'ON_TRIP',
-  },
-]
+// Backend returns "name" → your page expects "fullName"
+function mapDriverFromApi(driver) {
+  return {
+    id: driver.id,
+    fullName: driver.name,
+    licenseNumber: driver.licenseNumber,
+    licenseCategory: driver.licenseCategory,
+    licenseExpiryDate: driver.licenseExpiryDate,
+    contactNumber: driver.contactNumber,
+    emergencyContact: driver.emergencyContact,
+    safetyScore: driver.safetyScore,
+    status: driver.status,
+  }
+}
 
-const USE_MOCK = true
+// Your form → backend create request
+function mapDriverToApi(driverData) {
+  return {
+    name: driverData.fullName,
+    licenseNumber: driverData.licenseNumber,
+    licenseCategory: driverData.licenseCategory,
+    licenseExpiryDate: driverData.licenseExpiryDate,
+    contactNumber: driverData.contactNumber,
+    emergencyContact: driverData.emergencyContact || null,
+  }
+}
 
 export async function createDriver(driverData) {
-  if (USE_MOCK) {
-    const newDriver = {
-      id: mockDrivers.length + 1,
-      ...driverData,
-      safetyScore: Number(driverData.safetyScore),
-    }
-    mockDrivers = [...mockDrivers, newDriver]
-    return newDriver
-  }
-
-  const response = await fetch(`${API_BASE_URL}/api/drivers`, {
+  const response = await authFetch('/api/drivers', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(driverData),
+    body: JSON.stringify(mapDriverToApi(driverData)),
   })
 
-  const data = await response.json()
-  if (!response.ok) throw new Error(data?.message || 'Failed to create driver')
-  return data
+  return mapDriverFromApi(response)
 }
 
 export async function getDrivers(filters = {}) {
-  if (USE_MOCK) {
-    return mockDrivers.filter((driver) => {
-      const statusMatch = !filters.status || driver.status === filters.status
-      const categoryMatch =
-        !filters.licenseCategory || driver.licenseCategory === filters.licenseCategory
-      return statusMatch && categoryMatch
-    })
-  }
+  const drivers = await authFetch('/api/drivers')
 
-  const params = new URLSearchParams()
-  if (filters.status) params.append('status', filters.status)
-  if (filters.licenseCategory) params.append('licenseCategory', filters.licenseCategory)
+  const mapped = drivers.map(mapDriverFromApi)
 
-  const query = params.toString()
-  const url = `${API_BASE_URL}/api/drivers${query ? `?${query}` : ''}`
-
-  const response = await fetch(url)
-  const data = await response.json()
-  if (!response.ok) throw new Error(data?.message || 'Failed to load drivers')
-  return data
+  return mapped.filter((driver) => {
+    const statusMatch = !filters.status || driver.status === filters.status
+    const categoryMatch =
+      !filters.licenseCategory || driver.licenseCategory === filters.licenseCategory
+    return statusMatch && categoryMatch
+  })
 }
 
-// For Dispatcher trip form — only AVAILABLE drivers
 export async function getAvailableDrivers() {
-  return getDrivers({ status: 'AVAILABLE' })
+  const drivers = await getDrivers({ status: 'AVAILABLE' })
+  return drivers
 }
