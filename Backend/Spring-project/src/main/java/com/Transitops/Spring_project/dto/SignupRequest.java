@@ -27,7 +27,6 @@ public class SignupRequest {
     private Role role;
 
     private FleetManagerProfileDto fleetManagerProfile;
-    private DriverProfileDto driverProfile;
     private SafetyOfficerProfileDto safetyOfficerProfile;
     private FinancialAnalystProfileDto financialAnalystProfile;
 }

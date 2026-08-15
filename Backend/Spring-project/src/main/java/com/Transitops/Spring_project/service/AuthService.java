@@ -8,14 +8,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
     private final FleetManagerProfileRepository fleetManagerProfileRepository;
-    private final DriverProfileRepository driverProfileRepository;
     private final SafetyOfficerProfileRepository safetyOfficerProfileRepository;
     private final FinancialAnalystProfileRepository financialAnalystProfileRepository;
     private final PasswordEncoder passwordEncoder;
@@ -23,13 +20,11 @@ public class AuthService {
     public AuthService(
             UserRepository userRepository,
             FleetManagerProfileRepository fleetManagerProfileRepository,
-            DriverProfileRepository driverProfileRepository,
             SafetyOfficerProfileRepository safetyOfficerProfileRepository,
             FinancialAnalystProfileRepository financialAnalystProfileRepository,
             PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.fleetManagerProfileRepository = fleetManagerProfileRepository;
-        this.driverProfileRepository = driverProfileRepository;
         this.safetyOfficerProfileRepository = safetyOfficerProfileRepository;
         this.financialAnalystProfileRepository = financialAnalystProfileRepository;
         this.passwordEncoder = passwordEncoder;
@@ -54,7 +49,7 @@ public class AuthService {
 
         switch (request.getRole()) {
             case FLEET_MANAGER -> saveFleetManagerProfile(user, request.getFleetManagerProfile());
-            case DRIVER -> saveDriverProfile(user, request.getDriverProfile());
+            case DISPATCHER -> validateDispatcherSignup(request);
             case SAFETY_OFFICER -> saveSafetyOfficerProfile(user, request.getSafetyOfficerProfile());
             case FINANCIAL_ANALYST -> saveFinancialAnalystProfile(user, request.getFinancialAnalystProfile());
         }
@@ -76,6 +71,10 @@ public class AuthService {
         return toResponse(user, "Login successful");
     }
 
+    private void validateDispatcherSignup(SignupRequest request) {
+        requireNotBlank(request.getPhone(), "Phone number is required");
+    }
+
     private void saveFleetManagerProfile(User user, FleetManagerProfileDto dto) {
         if (dto == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fleet manager profile is required");
@@ -95,39 +94,6 @@ public class AuthService {
                 .company(dto.getCompany().trim())
                 .fleetSize(dto.getFleetSize())
                 .branch(dto.getBranch().trim())
-                .build());
-    }
-
-    private void saveDriverProfile(User user, DriverProfileDto dto) {
-        if (dto == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Driver profile is required");
-        }
-        requireNotBlank(dto.getEmployeeId(), "Employee/Driver ID is required");
-        requireNotBlank(dto.getLicenseNumber(), "License number is required");
-        requireNotBlank(dto.getEmergencyContact(), "Emergency contact is required");
-
-        if (dto.getLicenseExpiryDate() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "License expiry date is required");
-        }
-        if (dto.getLicenseExpiryDate().isBefore(LocalDate.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "License has already expired");
-        }
-        if (driverProfileRepository.existsByLicenseNumber(dto.getLicenseNumber().trim())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "License number already registered");
-        }
-        if (driverProfileRepository.existsByEmployeeId(dto.getEmployeeId().trim())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Driver ID already registered");
-        }
-
-        driverProfileRepository.save(DriverProfile.builder()
-                .user(user)
-                .employeeId(dto.getEmployeeId().trim())
-                .licenseNumber(dto.getLicenseNumber().trim())
-                .licenseExpiryDate(dto.getLicenseExpiryDate())
-                .assignedVehicleId(dto.getAssignedVehicleId())
-                .emergencyContact(dto.getEmergencyContact().trim())
-                .safetyScore(100)
-                .status(DriverStatus.AVAILABLE)
                 .build());
     }
 
