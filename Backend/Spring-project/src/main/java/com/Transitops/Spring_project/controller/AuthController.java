@@ -5,9 +5,10 @@ import com.Transitops.Spring_project.dto.LoginRequest;
 import com.Transitops.Spring_project.dto.SignupRequest;
 import com.Transitops.Spring_project.service.AuthService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -21,19 +22,11 @@ public class AuthController {
 
     @PostMapping("/signup")
     public AuthResponse signup(@Valid @RequestBody SignupRequest request) {
-        try {
-            return authService.signup(request);
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+        return authService.signup(request);
     }
 
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest request) {
-        try {
-            return authService.login(request);
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
+        return authService.login(request);
     }
 }

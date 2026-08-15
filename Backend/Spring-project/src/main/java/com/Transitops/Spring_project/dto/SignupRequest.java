@@ -25,4 +25,9 @@ public class SignupRequest {
 
     @NotNull(message = "Role is required")
     private Role role;
+
+    private FleetManagerProfileDto fleetManagerProfile;
+    private DriverProfileDto driverProfile;
+    private SafetyOfficerProfileDto safetyOfficerProfile;
+    private FinancialAnalystProfileDto financialAnalystProfile;
 }

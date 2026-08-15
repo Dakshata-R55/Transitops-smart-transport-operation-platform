@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -27,6 +26,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleStatus(ResponseStatusException ex) {
         String message = ex.getReason() != null ? ex.getReason() : "Request failed";
         return ResponseEntity.status(ex.getStatusCode()).body(Map.of("message", message));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
