@@ -6,7 +6,7 @@ import { getVehicleStatusLabel } from '../services/maintenanceService'
 import '../Styles/vehicles.css'
 
 const VEHICLE_TYPES = ['BUS', 'TRUCK', 'VAN', 'MINI_BUS']
-const VEHICLE_STATUSES = ['AVAILABLE', 'ON_TRIP', 'IN_SHOP', 'RETIRED']
+const VEHICLE_STATUSES = ['AVAILABLE', 'ON_TRIP', 'IN_SHOP']
 
 const EMPTY_FORM = {
   registrationNo: '',

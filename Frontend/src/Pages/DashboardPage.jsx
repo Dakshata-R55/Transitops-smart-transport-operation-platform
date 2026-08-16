@@ -3,8 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import AppLayout from '../Components/AppLayout'
 import BarChartCard from '../Components/BarChartCard'
 import {
-  fetchDashboardData,
-  computeDashboardKpis,
+  fetchDashboardKpis,
   VEHICLE_TYPES,
   VEHICLE_STATUSES,
   REGIONS,
@@ -19,28 +18,31 @@ const EMPTY_FILTERS = {
   region: '',
 }
 
+const EMPTY_KPIS = {
+  activeVehicles: 0,
+  availableVehicles: 0,
+  vehiclesInMaintenance: 0,
+  activeTrips: 0,
+  pendingTrips: 0,
+  driversOnDuty: 0,
+  fleetUtilization: 0,
+}
+
 function DashboardPage() {
   const { user } = useAuth()
 
   const [filters, setFilters] = useState(EMPTY_FILTERS)
-  const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS)
-  const [vehicles, setVehicles] = useState([])
-  const [drivers, setDrivers] = useState([])
-  const [trips, setTrips] = useState([])
-  const [loadErrors, setLoadErrors] = useState([])
+  const [kpis, setKpis] = useState(EMPTY_KPIS)
   const [pageError, setPageError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
 
-  async function loadDashboardData() {
+  async function loadDashboardData(currentFilters = filters) {
     setIsLoading(true)
     setPageError('')
 
     try {
-      const data = await fetchDashboardData()
-      setVehicles(data.vehicles)
-      setDrivers(data.drivers)
-      setTrips(data.trips)
-      setLoadErrors(data.loadErrors)
+      const data = await fetchDashboardKpis(currentFilters)
+      setKpis(data)
     } catch (error) {
       setPageError(error.message || 'Failed to load dashboard data')
     } finally {
@@ -49,10 +51,8 @@ function DashboardPage() {
   }
 
   useEffect(() => {
-    loadDashboardData()
+    loadDashboardData(EMPTY_FILTERS)
   }, [])
-
-  const kpis = computeDashboardKpis(vehicles, drivers, trips, appliedFilters)
 
   const vehicleStatusChartData = [
     { name: 'Available', value: kpis.availableVehicles },
@@ -70,12 +70,12 @@ function DashboardPage() {
 
   function handleApplyFilters(event) {
     event.preventDefault()
-    setAppliedFilters(filters)
+    loadDashboardData(filters)
   }
 
   function handleResetFilters() {
     setFilters(EMPTY_FILTERS)
-    setAppliedFilters(EMPTY_FILTERS)
+    loadDashboardData(EMPTY_FILTERS)
   }
 
   return (
@@ -84,14 +84,6 @@ function DashboardPage() {
       subtitle={`Welcome, ${user?.fullName || user?.email}`}
     >
       {pageError && <div className="form-error">{pageError}</div>}
-
-      {loadErrors.length > 0 && (
-        <div className="info-banner">
-          {loadErrors.map((message) => (
-            <div key={message}>{message}</div>
-          ))}
-        </div>
-      )}
 
       <div className="dashboard-card">
         <h2>Filters</h2>
@@ -163,7 +155,7 @@ function DashboardPage() {
           <button
             type="button"
             className="auth-button"
-            onClick={loadDashboardData}
+            onClick={() => loadDashboardData(filters)}
           >
             Refresh
           </button>
