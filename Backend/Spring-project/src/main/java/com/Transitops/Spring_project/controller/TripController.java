@@ -27,7 +27,7 @@ public class TripController {
         return tripService.createTrip(request);
     }
 
-    @PreAuthorize("hasRole('DISPATCHER')")
+    @PreAuthorize("hasAnyRole('DISPATCHER', 'FINANCIAL_ANALYST')")
     @GetMapping
     public List<TripResponse> getTrips(@RequestParam(required = false) TripStatus status) {
         return tripService.getTrips(status);

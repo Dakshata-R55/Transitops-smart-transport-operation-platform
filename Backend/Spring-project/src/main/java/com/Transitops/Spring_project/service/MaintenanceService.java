@@ -18,12 +18,17 @@ public class MaintenanceService {
     private final MaintenanceRepository maintenanceRepository;
     private final VehicleRepository vehicleRepository;
 
+    private final ExpenseService expenseService;
+
     public MaintenanceService(
-            MaintenanceRepository maintenanceRepository,
-            VehicleRepository vehicleRepository) {
+        MaintenanceRepository maintenanceRepository,
+        VehicleRepository vehicleRepository,
+        ExpenseService expenseService) {
         this.maintenanceRepository = maintenanceRepository;
         this.vehicleRepository = vehicleRepository;
-    }
+        this.expenseService = expenseService;
+}
+
 
     @Transactional
     public MaintenanceResponse createMaintenance(CreateMaintenanceRequest request) {
@@ -63,6 +68,7 @@ public class MaintenanceService {
         vehicle.setStatus(VehicleStatus.IN_SHOP);
 
         maintenanceRepository.save(record);
+        expenseService.createFromMaintenance(record); 
         return toResponse(record, "Maintenance record created");
     }
 
