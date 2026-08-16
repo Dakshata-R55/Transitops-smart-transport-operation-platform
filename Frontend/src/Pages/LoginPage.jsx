@@ -47,16 +47,7 @@ function LoginPage() {
       const data = await login(email.trim(), password)
       loginUser(data)
 
-      if (data.role === 'FLEET_MANAGER') {
-        navigate('/fleet/vehicles')
-      } else if (data.role === 'SAFETY_OFFICER') {
-        navigate('/safety/drivers')
-      }else if (data.role === 'DISPATCHER') {
-        navigate('/dispatcher/trips')
-      }
-      else {
-        navigate('/dashboard')
-      }
+      navigate('/dashboard')
     } catch (error) {
       setFormError(error.message || 'Login failed. Please try again.')
     } finally {

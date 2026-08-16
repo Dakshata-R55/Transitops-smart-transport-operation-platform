@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import AppLayout from '../Components/AppLayout'
 import { getAvailableVehicles } from '../services/vehicleService'
 import { getAvailableDrivers } from '../services/driverService'
 import {
@@ -21,8 +21,7 @@ const EMPTY_FORM = {
 }
 
 function DispatcherTripsPage() {
-  const { user, logoutUser } = useAuth()
-  const navigate = useNavigate()
+  const { user } = useAuth()
 
   const [form, setForm] = useState(EMPTY_FORM)
   const [vehicles, setVehicles] = useState([])
@@ -118,11 +117,6 @@ function DispatcherTripsPage() {
     await loadPageData(statusFilter)
   }
 
-  function handleLogout() {
-    logoutUser()
-    navigate('/login')
-  }
-
   function getVehicleLabel(vehicleId) {
     const vehicle = vehicles.find((v) => v.id === vehicleId)
     if (vehicle) return `${vehicle.registrationNo} — ${vehicle.name}`
@@ -182,20 +176,11 @@ function DispatcherTripsPage() {
   }
 
   return (
-    <div className="vehicles-page">
+    <AppLayout
+      title="Dispatcher — Trips"
+      subtitle={`Logged in as ${user?.fullName || user?.email}`}
+    >
       <div className="vehicles-container">
-        <div className="vehicles-header">
-          <div>
-            <h1>Dispatcher — Trips</h1>
-            <p className="auth-subtitle">
-              Logged in as {user?.fullName || user?.email}
-            </p>
-          </div>
-          <button type="button" className="auth-button" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
-
         <div className="vehicles-card">
           <h2>Create Trip</h2>
           <p className="auth-subtitle">New trips start as DRAFT</p>
@@ -370,7 +355,7 @@ function DispatcherTripsPage() {
           )}
         </div>
       </div>
-    </div>
+    </AppLayout>
   )
 }
 

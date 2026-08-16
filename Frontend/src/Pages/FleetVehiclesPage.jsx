@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import AppLayout from '../Components/AppLayout'
 import { createVehicle, getVehicles } from '../services/vehicleService'
+import { getVehicleStatusLabel } from '../services/maintenanceService'
 import '../Styles/vehicles.css'
 
 const VEHICLE_TYPES = ['BUS', 'TRUCK', 'VAN', 'MINI_BUS']
@@ -18,8 +19,7 @@ const EMPTY_FORM = {
 }
 
 function FleetVehiclesPage() {
-  const { user, logoutUser } = useAuth()
-  const navigate = useNavigate()
+  const { user } = useAuth()
 
   const [form, setForm] = useState(EMPTY_FORM)
   const [filters, setFilters] = useState({ type: '', status: '' })
@@ -106,35 +106,12 @@ function FleetVehiclesPage() {
     await loadVehicles(filters)
   }
 
-  function handleLogout() {
-    logoutUser()
-    navigate('/login')
-  }
-
   return (
-    <div className="vehicles-page">
+    <AppLayout
+      title="Fleet Manager — Vehicles"
+      subtitle={`Logged in as ${user?.fullName || user?.email}`}
+    >
       <div className="vehicles-container">
-        <div className="vehicles-header">
-          <div>
-            <h1>Fleet Manager — Vehicles</h1>
-            <p className="auth-subtitle">
-              Logged in as {user?.fullName || user?.email}
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <Link
-              to="/fleet/maintenance"
-              className="auth-button"
-              style={{ textDecoration: 'none' }}
-            >
-              Maintenance Log
-            </Link>
-            <button type="button" className="auth-button" onClick={handleLogout}>
-              Logout
-            </button>
-          </div>
-        </div>
-
         <div className="vehicles-card">
           <h2>Add Vehicle</h2>
           {formError && <div className="form-error">{formError}</div>}
@@ -189,7 +166,7 @@ function FleetVehiclesPage() {
                 >
                   {VEHICLE_STATUSES.map((status) => (
                     <option key={status} value={status}>
-                      {status}
+                      {getVehicleStatusLabel(status)}
                     </option>
                   ))}
                 </select>
@@ -277,7 +254,7 @@ function FleetVehiclesPage() {
                 <option value="">All Statuses</option>
                 {VEHICLE_STATUSES.map((status) => (
                   <option key={status} value={status}>
-                    {status}
+                    {getVehicleStatusLabel(status)}
                   </option>
                 ))}
               </select>
@@ -318,7 +295,7 @@ function FleetVehiclesPage() {
                       <td>{vehicle.capacity}</td>
                       <td>{vehicle.odometer}</td>
                       <td>{vehicle.acqCost}</td>
-                      <td>{vehicle.status}</td>
+                      <td>{getVehicleStatusLabel(vehicle.status)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -327,7 +304,7 @@ function FleetVehiclesPage() {
           )}
         </div>
       </div>
-    </div>
+    </AppLayout>
   )
 }
 

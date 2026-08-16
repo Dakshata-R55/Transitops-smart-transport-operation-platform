@@ -44,3 +44,23 @@ export async function completeMaintenance(id) {
 
   return mapMaintenanceFromApi(response)
 }
+
+export const MAINTENANCE_STATUS_LABELS = {
+    OPEN: 'In Shop (Under Maintenance)',
+    COMPLETED: 'Complete (Ready to Dispatch)',
+  }
+  
+  export const VEHICLE_STATUS_LABELS = {
+    AVAILABLE: 'Available (Ready to Dispatch)',
+    IN_SHOP: 'In Shop (Under Maintenance)',
+    ON_TRIP: 'On Trip',
+    RETIRED: 'Retired',
+  }
+  
+  export function getMaintenanceStatusLabel(status) {
+    return MAINTENANCE_STATUS_LABELS[status] || status
+  }
+  
+  export function getVehicleStatusLabel(status) {
+    return VEHICLE_STATUS_LABELS[status] || status
+  }
