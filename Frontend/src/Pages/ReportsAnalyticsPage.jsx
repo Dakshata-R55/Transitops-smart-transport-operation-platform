@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import AppLayout from '../Components/AppLayout'
+import BarChartCard from '../Components/BarChartCard'
 import { getReportsAnalytics, formatMonthLabel } from '../services/reportsService'
 import { formatMoney } from '../services/financeService'
 import '../Styles/dashboard.css'
@@ -30,6 +31,16 @@ function ReportsAnalyticsPage() {
   useEffect(() => {
     loadReports()
   }, [])
+
+  const monthlyRevenueChartData = (report?.monthlyRevenue || []).map((item) => ({
+    name: formatMonthLabel(item.month),
+    value: item.revenue,
+  }))
+
+  const topCostChartData = (report?.topCostliestVehicles || []).map((vehicle) => ({
+    name: vehicle.registrationNumber,
+    value: vehicle.totalCost,
+  }))
 
   return (
     <AppLayout
@@ -76,8 +87,28 @@ function ReportsAnalyticsPage() {
           </div>
         </div>
 
+        {!isLoading && (
+          <div className="charts-grid">
+            <BarChartCard
+              title="Monthly Revenue"
+              data={monthlyRevenueChartData}
+              dataKey="value"
+              barColor="#2563eb"
+              valueFormatter={(value) => `₹ ${formatMoney(value)}`}
+            />
+
+            <BarChartCard
+              title="Top Costliest Vehicles"
+              data={topCostChartData}
+              dataKey="value"
+              barColor="#dc2626"
+              valueFormatter={(value) => `₹ ${formatMoney(value)}`}
+            />
+          </div>
+        )}
+
         <div className="vehicles-card">
-          <h2>Monthly Revenue</h2>
+          <h2>Monthly Revenue Details</h2>
           {isLoading ? (
             <p>Loading...</p>
           ) : !report?.monthlyRevenue?.length ? (

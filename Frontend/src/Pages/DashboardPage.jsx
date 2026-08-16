@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import AppLayout from '../Components/AppLayout'
+import BarChartCard from '../Components/BarChartCard'
 import {
   fetchDashboardData,
   computeDashboardKpis,
@@ -52,6 +53,20 @@ function DashboardPage() {
   }, [])
 
   const kpis = computeDashboardKpis(vehicles, drivers, trips, appliedFilters)
+
+  const vehicleStatusChartData = [
+    { name: 'Available', value: kpis.availableVehicles },
+    { name: 'On Trip', value: kpis.activeTrips },
+    { name: 'Maintenance', value: kpis.vehiclesInMaintenance },
+    { name: 'Active Fleet', value: kpis.activeVehicles },
+  ]
+
+  const tripStatusChartData = [
+    { name: 'Active Trips', value: kpis.activeTrips },
+    { name: 'Pending Trips', value: kpis.pendingTrips },
+    { name: 'Drivers On Duty', value: kpis.driversOnDuty },
+    { name: 'Utilization %', value: kpis.fleetUtilization },
+  ]
 
   function handleApplyFilters(event) {
     event.preventDefault()
@@ -205,6 +220,24 @@ function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {!isLoading && (
+        <div className="charts-grid">
+          <BarChartCard
+            title="Vehicle Status Overview"
+            data={vehicleStatusChartData}
+            dataKey="value"
+            barColor="#2563eb"
+          />
+
+          <BarChartCard
+            title="Trips & Utilization"
+            data={tripStatusChartData}
+            dataKey="value"
+            barColor="#16a34a"
+          />
+        </div>
+      )}
     </AppLayout>
   )
 }

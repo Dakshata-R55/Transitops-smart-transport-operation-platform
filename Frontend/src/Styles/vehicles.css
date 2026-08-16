@@ -5,8 +5,8 @@
   }
   
   .vehicles-container {
-    max-width: 1100px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -26,16 +26,16 @@
   }
   
   .vehicles-card {
-    padding: 24px;
+    padding: 28px;
     border: 1px solid var(--border);
     border-radius: 12px;
     box-shadow: var(--shadow);
-    background: var(--bg);
+    background: var(--surface);
   }
   
   .vehicles-card h2 {
     margin: 0 0 16px;
-    font-size: 20px;
+    font-size: 22px;
   }
   
   .vehicles-grid {
@@ -77,12 +77,6 @@
     font-weight: 600;
   }
   
-  @media (max-width: 768px) {
-    .vehicles-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
   .settings-permission-list {
     margin: 12px 0 0;
     padding-left: 20px;
@@ -101,4 +95,10 @@
     border-radius: 8px;
     background: rgba(34, 197, 94, 0.12);
     color: #22c55e;
+  }
+  
+  @media (max-width: 768px) {
+    .vehicles-grid {
+      grid-template-columns: 1fr;
+    }
   }
