@@ -3,6 +3,7 @@ export const NAV_BY_ROLE = {
       { label: 'Dashboard', path: '/dashboard' },
       { label: 'Vehicles', path: '/fleet/vehicles' },
       { label: 'Maintenance Log', path: '/fleet/maintenance' },
+      { label: 'Reports & Analytics', path: '/reports/analytics' },
     ],
     SAFETY_OFFICER: [
       { label: 'Dashboard', path: '/dashboard' },
@@ -15,6 +16,7 @@ export const NAV_BY_ROLE = {
     FINANCIAL_ANALYST: [
       { label: 'Dashboard', path: '/dashboard' },
       { label: 'Fuel & Expenses', path: '/finance/costs' },
+      { label: 'Reports & Analytics', path: '/reports/analytics' },
     ],
   }
   

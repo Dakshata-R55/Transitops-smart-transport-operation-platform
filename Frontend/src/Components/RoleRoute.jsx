@@ -46,4 +46,14 @@ export function FinancialAnalystRoute({ children }) {
   )
 }
 
+export function ReportsAnalyticsRoute({ children }) {
+  return (
+    <ProtectedRoute>
+      <RoleRoute allowedRoles={['FLEET_MANAGER', 'FINANCIAL_ANALYST']}>
+        {children}
+      </RoleRoute>
+    </ProtectedRoute>
+  )
+}
+
 export default RoleRoute

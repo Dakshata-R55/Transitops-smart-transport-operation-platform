@@ -7,6 +7,7 @@ import FleetMaintenancePage from './Pages/FleetMaintenancePage'
 import SafetyOfficerDriversPage from './Pages/SafetyOfficerDriversPage'
 import DispatcherTripsPage from './Pages/DispatcherTripsPage'
 import FinancialCostsPage from './Pages/FinancialCostsPage'
+import ReportsAnalyticsPage from './Pages/ReportsAnalyticsPage'
 import UnauthorizedPage from './Pages/UnauthorizedPage'
 import ProtectedRoute from './Components/ProtectedRoute'
 import {
@@ -14,6 +15,7 @@ import {
   SafetyOfficerRoute,
   DispatcherRoute,
   FinancialAnalystRoute,
+  ReportsAnalyticsRoute,
 } from './Components/RoleRoute'
 
 function App() {
@@ -75,6 +77,15 @@ function App() {
             <FinancialAnalystRoute>
               <FinancialCostsPage />
             </FinancialAnalystRoute>
+          }
+        />
+
+        <Route
+          path="/reports/analytics"
+          element={
+            <ReportsAnalyticsRoute>
+              <ReportsAnalyticsPage />
+            </ReportsAnalyticsRoute>
           }
         />
 
