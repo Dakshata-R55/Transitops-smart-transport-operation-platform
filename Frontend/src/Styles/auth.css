@@ -131,3 +131,9 @@
   .auth-footer a:hover {
     text-decoration: underline;
   }
+
+  .auth-theme-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+  }

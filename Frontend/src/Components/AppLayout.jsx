@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { getNavItemsForRole } from '../config/roleNavigation'
+import ThemeToggle from './ThemeToggle'
 import '../Styles/layout.css'
 
 function AppLayout({ title, subtitle, children }) {
@@ -41,6 +42,7 @@ function AppLayout({ title, subtitle, children }) {
         </nav>
 
         <div className="sidebar-footer">
+          <ThemeToggle label="Appearance" />
           <button type="button" className="auth-button" onClick={handleLogout}>
             Logout
           </button>

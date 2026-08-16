@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useSettings } from '../context/SettingsContext'
 import AppLayout from '../Components/AppLayout'
 import BarChartCard from '../Components/BarChartCard'
 import { getReportsAnalytics, formatMonthLabel } from '../services/reportsService'
-import { formatMoney } from '../services/financeService'
 import '../Styles/dashboard.css'
 import '../Styles/vehicles.css'
 
 function ReportsAnalyticsPage() {
   const { user } = useAuth()
+  const { formatCurrency, currencyCode } = useSettings()
 
   const [report, setReport] = useState(null)
   const [pageError, setPageError] = useState('')
@@ -75,7 +76,7 @@ function ReportsAnalyticsPage() {
           <div className="kpi-card">
             <div className="kpi-label">Operational Cost</div>
             <div className="kpi-value">
-              {isLoading ? '...' : `₹ ${formatMoney(report?.operationalCost)}`}
+              {isLoading ? '...' : formatCurrency(report?.operationalCost)}
             </div>
           </div>
 
@@ -94,7 +95,7 @@ function ReportsAnalyticsPage() {
               data={monthlyRevenueChartData}
               dataKey="value"
               barColor="#2563eb"
-              valueFormatter={(value) => `₹ ${formatMoney(value)}`}
+              valueFormatter={(value) => formatCurrency(value)}
             />
 
             <BarChartCard
@@ -102,7 +103,7 @@ function ReportsAnalyticsPage() {
               data={topCostChartData}
               dataKey="value"
               barColor="#dc2626"
-              valueFormatter={(value) => `₹ ${formatMoney(value)}`}
+              valueFormatter={(value) => formatCurrency(value)}
             />
           </div>
         )}
@@ -119,14 +120,14 @@ function ReportsAnalyticsPage() {
                 <thead>
                   <tr>
                     <th>Month</th>
-                    <th>Revenue (₹)</th>
+                    <th>Revenue ({currencyCode})</th>
                   </tr>
                 </thead>
                 <tbody>
                   {report.monthlyRevenue.map((item) => (
                     <tr key={item.month}>
                       <td>{formatMonthLabel(item.month)}</td>
-                      <td>{formatMoney(item.revenue)}</td>
+                      <td>{formatCurrency(item.revenue)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -148,7 +149,7 @@ function ReportsAnalyticsPage() {
                   <tr>
                     <th>Reg No</th>
                     <th>Vehicle</th>
-                    <th>Total Cost (₹)</th>
+                    <th>Total Cost ({currencyCode})</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -156,7 +157,7 @@ function ReportsAnalyticsPage() {
                     <tr key={vehicle.vehicleId}>
                       <td>{vehicle.registrationNumber}</td>
                       <td>{vehicle.nameModel}</td>
-                      <td>{formatMoney(vehicle.totalCost)}</td>
+                      <td>{formatCurrency(vehicle.totalCost)}</td>
                     </tr>
                   ))}
                 </tbody>

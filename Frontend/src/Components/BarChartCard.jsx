@@ -13,7 +13,7 @@ import {
     data,
     dataKey = 'value',
     labelKey = 'name',
-    barColor = '#2563eb',
+    barColor = 'var(--accent)',
     valueFormatter,
   }) {
     return (
@@ -25,13 +25,18 @@ import {
         ) : (
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
               <XAxis
                 dataKey={labelKey}
-                tick={{ fill: '#475569', fontSize: 12 }}
+                tick={{ fill: 'var(--chart-text)', fontSize: 12 }}
               />
-              <YAxis tick={{ fill: '#475569', fontSize: 12 }} />
+              <YAxis tick={{ fill: 'var(--chart-text)', fontSize: 12 }} />
               <Tooltip
+                contentStyle={{
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-h)',
+                }}
                 formatter={(value) =>
                   valueFormatter ? valueFormatter(value) : value
                 }

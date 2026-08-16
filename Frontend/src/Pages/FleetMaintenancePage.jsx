@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useSettings } from '../context/SettingsContext'
 import AppLayout from '../Components/AppLayout'
 import { getVehicles } from '../services/vehicleService'
 import {
@@ -21,6 +22,7 @@ const EMPTY_FORM = {
 
 function FleetMaintenancePage() {
   const { user } = useAuth()
+  const { formatCurrency, currencyCode } = useSettings()
 
   const [form, setForm] = useState(EMPTY_FORM)
   const [vehicles, setVehicles] = useState([])
@@ -171,7 +173,7 @@ function FleetMaintenancePage() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="cost">Maintenance Cost (₹)</label>
+                <label htmlFor="cost">Maintenance Cost ({currencyCode})</label>
                 <input
                   id="cost"
                   type="number"
@@ -205,7 +207,7 @@ function FleetMaintenancePage() {
                     <th>Vehicle</th>
                     <th>Maintenance Type</th>
                     <th>Service Date</th>
-                    <th>Cost (₹)</th>
+                    <th>Cost ({currencyCode})</th>
                     <th>Maintenance Status</th>
                     <th>Vehicle Status</th>
                     <th>Action</th>
@@ -219,7 +221,7 @@ function FleetMaintenancePage() {
                       </td>
                       <td>{getServiceTypeLabel(record.serviceType)}</td>
                       <td>{record.serviceDate}</td>
-                      <td>{record.cost}</td>
+                      <td>{formatCurrency(record.cost)}</td>
                       <td>{getMaintenanceStatusLabel(record.status)}</td>
                       <td>{getVehicleStatusLabel(record.vehicleStatus)}</td>
                       <td>

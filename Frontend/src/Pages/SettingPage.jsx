@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useSettings } from '../context/SettingsContext'
 import AppLayout from '../Components/AppLayout'
-import { getSettings, updateSettings } from '../services/settingService'
+import ThemeToggle from '../Components/ThemeToggle'
 import {
   getRoleLabel,
   getPermissionsForRole,
@@ -9,40 +10,32 @@ import {
 } from '../config/rolePermissions'
 import '../Styles/dashboard.css'
 import '../Styles/vehicles.css'
+import '../Styles/layout.css'
 
 function SettingsPage() {
   const { user, role } = useAuth()
+  const {
+    settings,
+    saveAppSettings,
+    loadSettings,
+    isLoadingSettings,
+    formatCurrency,
+    currencyCode,
+  } = useSettings()
 
-  const [settings, setSettings] = useState(null)
   const [depotName, setDepotName] = useState('')
   const [currency, setCurrency] = useState('INR')
   const [pageError, setPageError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
 
   const myPermissions = getPermissionsForRole(role)
 
-  async function loadSettings() {
-    setIsLoading(true)
-    setPageError('')
-    setSuccessMessage('')
-
-    try {
-      const data = await getSettings()
-      setSettings(data)
-      setDepotName(data.depotName)
-      setCurrency(data.currency)
-    } catch (error) {
-      setPageError(error.message || 'Failed to load settings')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   useEffect(() => {
-    loadSettings()
-  }, [])
+    if (!settings) return
+    setDepotName(settings.depotName || '')
+    setCurrency(settings.currency || 'INR')
+  }, [settings])
 
   async function handleSaveSettings(event) {
     event.preventDefault()
@@ -57,11 +50,10 @@ function SettingsPage() {
     setIsSaving(true)
 
     try {
-      const updated = await updateSettings({ depotName, currency })
-      setSettings(updated)
-      setDepotName(updated.depotName)
-      setCurrency(updated.currency)
-      setSuccessMessage('App settings saved successfully')
+      await saveAppSettings({ depotName, currency })
+      setSuccessMessage(
+        'App settings saved successfully. Currency is now updated across the app.'
+      )
     } catch (error) {
       setPageError(error.message || 'Failed to save settings')
     } finally {
@@ -78,7 +70,6 @@ function SettingsPage() {
       {successMessage && <div className="form-success">{successMessage}</div>}
 
       <div className="vehicles-container">
-        {/* Section 1: Your account */}
         <div className="vehicles-card">
           <h2>Your Account</h2>
           <div className="vehicle-details-grid">
@@ -101,7 +92,14 @@ function SettingsPage() {
           </div>
         </div>
 
-        {/* Section 2: Your permissions (RBAC) */}
+        <div className="vehicles-card">
+          <h2>Appearance</h2>
+          <p className="auth-subtitle">
+            Choose light (white) or dark (black) theme for the application.
+          </p>
+          <ThemeToggle label="Color Theme" />
+        </div>
+
         <div className="vehicles-card">
           <h2>Your Permissions</h2>
           <p className="auth-subtitle">
@@ -119,7 +117,6 @@ function SettingsPage() {
           )}
         </div>
 
-        {/* Section 3: Full RBAC overview (read-only) */}
         <div className="vehicles-card">
           <h2>Role Access Overview</h2>
           <p className="auth-subtitle">
@@ -140,14 +137,16 @@ function SettingsPage() {
           </div>
         </div>
 
-        {/* Section 4: App settings (API-backed) */}
         <div className="vehicles-card">
           <h2>App Settings</h2>
           <p className="auth-subtitle">
             Depot and currency settings shared across the application.
           </p>
+          <p className="auth-subtitle">
+            Current currency preview: {formatCurrency(1234.56)}
+          </p>
 
-          {isLoading ? (
+          {isLoadingSettings ? (
             <p>Loading settings...</p>
           ) : (
             <form className="vehicle-form" onSubmit={handleSaveSettings}>
@@ -196,8 +195,21 @@ function SettingsPage() {
               >
                 {isSaving ? 'Saving...' : 'Save Settings'}
               </button>
+
+              <button
+                type="button"
+                className="auth-button"
+                onClick={loadSettings}
+                style={{ marginLeft: '8px' }}
+              >
+                Reload Settings
+              </button>
             </form>
           )}
+
+          <p className="auth-subtitle" style={{ marginTop: '12px' }}>
+            Active currency code: {currencyCode}
+          </p>
         </div>
       </div>
     </AppLayout>

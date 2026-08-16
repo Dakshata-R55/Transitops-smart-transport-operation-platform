@@ -1,4 +1,5 @@
 import { authFetch } from './apiClient'
+import { formatMoney, formatCurrency } from './currencyService'
 
 export async function getFinanceSummary() {
   return authFetch('/api/finance/summary')
@@ -36,10 +37,4 @@ export function computeVehicleOperationalCosts(vehicles, fuelLogs, expenses) {
   }))
 }
 
-export function formatMoney(value) {
-  const number = Number(value || 0)
-  return number.toLocaleString('en-IN', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
-}
+export { formatMoney, formatCurrency }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useSettings } from '../context/SettingsContext'
 import AppLayout from '../Components/AppLayout'
 import { getVehicles } from '../services/vehicleService'
 import { createFuelLog, getFuelLogs } from '../services/fuelServices'
@@ -12,7 +13,6 @@ import {
 import {
   getFinanceSummary,
   computeVehicleOperationalCosts,
-  formatMoney,
 } from '../services/financeService'
 import '../Styles/vehicles.css'
 
@@ -31,6 +31,7 @@ const EMPTY_EXPENSE_FORM = {
 
 function FinancialCostsPage() {
   const { user } = useAuth()
+  const { formatCurrency, currencyCode } = useSettings()
 
   const [vehicles, setVehicles] = useState([])
   const [fuelLogs, setFuelLogs] = useState([])
@@ -180,23 +181,23 @@ function FinancialCostsPage() {
             <div className="vehicles-grid">
               <div className="form-group">
                 <strong>Total Fuel Cost</strong>
-                <p>₹ {formatMoney(summary.totalFuelCost)}</p>
+                <p>{formatCurrency(summary.totalFuelCost)}</p>
               </div>
               <div className="form-group">
                 <strong>Total Maintenance Cost</strong>
-                <p>₹ {formatMoney(summary.totalMaintenanceCost)}</p>
+                <p>{formatCurrency(summary.totalMaintenanceCost)}</p>
               </div>
               <div className="form-group">
                 <strong>Total Toll Fees</strong>
-                <p>₹ {formatMoney(summary.totalTollFees)}</p>
+                <p>{formatCurrency(summary.totalTollFees)}</p>
               </div>
               <div className="form-group">
                 <strong>Total Other Fees</strong>
-                <p>₹ {formatMoney(summary.totalOtherFees)}</p>
+                <p>{formatCurrency(summary.totalOtherFees)}</p>
               </div>
               <div className="form-group full-width">
                 <strong>Total Operational Cost (All)</strong>
-                <p>₹ {formatMoney(summary.totalOperationalCost)}</p>
+                <p>{formatCurrency(summary.totalOperationalCost)}</p>
               </div>
             </div>
           )}
@@ -221,9 +222,9 @@ function FinancialCostsPage() {
                   <tr>
                     <th>Reg No</th>
                     <th>Vehicle</th>
-                    <th>Fuel Cost (₹)</th>
-                    <th>Maintenance Cost (₹)</th>
-                    <th>Total Operational Cost (₹)</th>
+                    <th>Fuel Cost ({currencyCode})</th>
+                    <th>Maintenance Cost ({currencyCode})</th>
+                    <th>Total Operational Cost ({currencyCode})</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -231,9 +232,9 @@ function FinancialCostsPage() {
                     <tr key={row.vehicleId}>
                       <td>{row.registrationNo}</td>
                       <td>{row.name}</td>
-                      <td>{formatMoney(row.fuelCost)}</td>
-                      <td>{formatMoney(row.maintenanceCost)}</td>
-                      <td>{formatMoney(row.totalOperationalCost)}</td>
+                      <td>{formatCurrency(row.fuelCost)}</td>
+                      <td>{formatCurrency(row.maintenanceCost)}</td>
+                      <td>{formatCurrency(row.totalOperationalCost)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -295,7 +296,7 @@ function FinancialCostsPage() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="fuelCost">Fuel Cost (₹)</label>
+                <label htmlFor="fuelCost">Fuel Cost ({currencyCode})</label>
                 <input
                   id="fuelCost"
                   type="number"
@@ -344,7 +345,7 @@ function FinancialCostsPage() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="tollFee">Toll Fee (₹)</label>
+                <label htmlFor="tollFee">Toll Fee ({currencyCode})</label>
                 <input
                   id="tollFee"
                   type="number"
@@ -358,7 +359,7 @@ function FinancialCostsPage() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="otherFee">Other Fee (₹)</label>
+                <label htmlFor="otherFee">Other Fee ({currencyCode})</label>
                 <input
                   id="otherFee"
                   type="number"
@@ -388,7 +389,7 @@ function FinancialCostsPage() {
                     <th>Vehicle</th>
                     <th>Date</th>
                     <th>Liters</th>
-                    <th>Cost (₹)</th>
+                    <th>Cost ({currencyCode})</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -399,7 +400,7 @@ function FinancialCostsPage() {
                       </td>
                       <td>{log.logDate}</td>
                       <td>{log.liters}</td>
-                      <td>{formatMoney(log.fuelCost)}</td>
+                      <td>{formatCurrency(log.fuelCost)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -420,10 +421,10 @@ function FinancialCostsPage() {
                 <thead>
                   <tr>
                     <th>Vehicle</th>
-                    <th>Toll (₹)</th>
-                    <th>Other (₹)</th>
-                    <th>Maintenance (₹)</th>
-                    <th>Total (₹)</th>
+                    <th>Toll ({currencyCode})</th>
+                    <th>Other ({currencyCode})</th>
+                    <th>Maintenance ({currencyCode})</th>
+                    <th>Total ({currencyCode})</th>
                     <th>Source</th>
                     <th>Status</th>
                     <th>Action</th>
@@ -433,10 +434,10 @@ function FinancialCostsPage() {
                   {expenses.map((expense) => (
                     <tr key={expense.id}>
                       <td>{expense.vehicleRegistrationNo}</td>
-                      <td>{formatMoney(expense.tollFee)}</td>
-                      <td>{formatMoney(expense.otherFee)}</td>
-                      <td>{formatMoney(expense.maintenanceLinkedCost)}</td>
-                      <td>{formatMoney(expense.total)}</td>
+                      <td>{formatCurrency(expense.tollFee)}</td>
+                      <td>{formatCurrency(expense.otherFee)}</td>
+                      <td>{formatCurrency(expense.maintenanceLinkedCost)}</td>
+                      <td>{formatCurrency(expense.total)}</td>
                       <td>
                         {expense.autoGeneratedFromMaintenance
                           ? 'Auto (Maintenance)'
