@@ -82,3 +82,23 @@
       grid-template-columns: 1fr;
     }
   }
+
+  .settings-permission-list {
+    margin: 12px 0 0;
+    padding-left: 20px;
+  }
+  
+  .settings-rbac-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  
+  .form-success {
+    margin-bottom: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(34, 197, 94, 0.12);
+    color: #22c55e;
+  }

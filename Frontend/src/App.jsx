@@ -10,6 +10,7 @@ import FinancialCostsPage from './Pages/FinancialCostsPage'
 import ReportsAnalyticsPage from './Pages/ReportsAnalyticsPage'
 import UnauthorizedPage from './Pages/UnauthorizedPage'
 import ProtectedRoute from './Components/ProtectedRoute'
+import SettingsPage from './Pages/SettingsPage'
 import {
   FleetManagerRoute,
   SafetyOfficerRoute,
@@ -86,6 +87,15 @@ function App() {
             <ReportsAnalyticsRoute>
               <ReportsAnalyticsPage />
             </ReportsAnalyticsRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <SettingsPage />
+            </ProtectedRoute>
           }
         />
 
