@@ -1,7 +1,7 @@
 import { authFetch } from './apiClient'
 
 export const EXPENSE_STATUS_LABELS = {
-  AVAILABLE: 'Open',
+  AVAILABLE: 'AVAILABLE',
   COMPLETED: 'Completed',
 }
 
