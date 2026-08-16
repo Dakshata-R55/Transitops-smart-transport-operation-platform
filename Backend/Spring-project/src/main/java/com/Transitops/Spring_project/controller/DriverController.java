@@ -25,7 +25,7 @@ public class DriverController {
         return driverService.createDriver(request);
     }
 
-    @PreAuthorize("hasAnyRole('SAFETY_OFFICER', 'DISPATCHER', 'FLEET_MANAGER')")
+    @PreAuthorize("hasAnyRole('SAFETY_OFFICER', 'FLEET_MANAGER')")
     @GetMapping
     public List<DriverResponse> getAllDrivers() {
         return driverService.getAllDrivers();

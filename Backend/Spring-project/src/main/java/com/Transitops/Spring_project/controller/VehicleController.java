@@ -25,7 +25,7 @@ public class VehicleController {
         return vehicleService.createVehicle(request);
     }
 
-    @PreAuthorize("hasAnyRole('FLEET_MANAGER', 'DISPATCHER', 'SAFETY_OFFICER', 'FINANCIAL_ANALYST')")
+    @PreAuthorize("hasAnyRole('FLEET_MANAGER', 'DISPATCHER', 'FINANCIAL_ANALYST')")
     @GetMapping
     public List<VehicleResponse> getAllVehicles() {
         return vehicleService.getAllVehicles();
