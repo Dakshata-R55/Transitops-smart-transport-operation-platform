@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import AppLayout from '../Components/AppLayout'
-import { getSettings, updateSettings } from '../services/settingsService'
+import { getSettings, updateSettings } from '../services/settingService'
 import {
   getRoleLabel,
   getPermissionsForRole,

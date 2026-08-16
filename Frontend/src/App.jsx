@@ -10,7 +10,7 @@ import FinancialCostsPage from './Pages/FinancialCostsPage'
 import ReportsAnalyticsPage from './Pages/ReportsAnalyticsPage'
 import UnauthorizedPage from './Pages/UnauthorizedPage'
 import ProtectedRoute from './Components/ProtectedRoute'
-import SettingsPage from './Pages/SettingsPage'
+import SettingsPage from './Pages/SettingPage'
 import {
   FleetManagerRoute,
   SafetyOfficerRoute,
