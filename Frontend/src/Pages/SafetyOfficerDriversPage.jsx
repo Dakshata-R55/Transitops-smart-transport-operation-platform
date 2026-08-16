@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import AppLayout from '../Components/AppLayout'
-import { createDriver, getDrivers } from '../services/driverService'
+import {
+  createDriver,
+  getDrivers,
+  updateDriverStatus,
+  getDriverStatusLabel,
+  SAFETY_OFFICER_STATUS_OPTIONS,
+} from '../services/driverService'
 import '../Styles/vehicles.css'
 
 const LICENSE_CATEGORIES = ['LMV', 'HMV', 'PSV', 'MCWG']
-const DRIVER_STATUSES = ['AVAILABLE', 'ON_TRIP', 'OFF_DUTY', 'SUSPENDED']
+const FILTER_STATUSES = ['AVAILABLE', 'ON_TRIP', 'OFF_DUTY', 'SUSPENDED']
 
 const EMPTY_FORM = {
   fullName: '',
@@ -14,7 +20,6 @@ const EMPTY_FORM = {
   licenseExpiryDate: '',
   contactNumber: '',
   safetyScore: '100',
-  status: 'AVAILABLE',
 }
 
 function SafetyOfficerDriversPage() {
@@ -77,7 +82,6 @@ function SafetyOfficerDriversPage() {
         licenseExpiryDate: form.licenseExpiryDate,
         contactNumber: form.contactNumber.trim(),
         safetyScore: Number(form.safetyScore),
-        status: form.status,
       })
       setForm(EMPTY_FORM)
       setErrors({})
@@ -94,6 +98,39 @@ function SafetyOfficerDriversPage() {
     await loadDrivers(filters)
   }
 
+  async function handleStatusChange(driverId, nextStatus) {
+    setFormError('')
+    try {
+      await updateDriverStatus(driverId, nextStatus)
+      await loadDrivers(filters)
+    } catch (error) {
+      setFormError(error.message || 'Failed to update driver status')
+    }
+  }
+
+  function renderStatusActions(driver) {
+    if (driver.status === 'ON_TRIP') {
+      return <span>On trip (auto)</span>
+    }
+
+    return (
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        {SAFETY_OFFICER_STATUS_OPTIONS.filter(
+          (option) => option.value !== driver.status
+        ).map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            className="auth-button"
+            onClick={() => handleStatusChange(driver.id, option.value)}
+          >
+            Set {option.label}
+          </button>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <AppLayout
       title="Safety Officer — Driver Profiles"
@@ -102,6 +139,9 @@ function SafetyOfficerDriversPage() {
       <div className="vehicles-container">
         <div className="vehicles-card">
           <h2>Add Driver</h2>
+          <p className="auth-subtitle">
+            New drivers are created as Available. Use the table below to change status later.
+          </p>
           {formError && <div className="form-error">{formError}</div>}
 
           <form className="auth-form" onSubmit={handleAddDriver} noValidate>
@@ -175,7 +215,7 @@ function SafetyOfficerDriversPage() {
                 )}
               </div>
 
-              <div className="form-group">
+              <div className="form-group full-width">
                 <label htmlFor="safetyScore">Safety Score</label>
                 <input
                   id="safetyScore"
@@ -189,21 +229,6 @@ function SafetyOfficerDriversPage() {
                 {errors.safetyScore && (
                   <span className="field-error">{errors.safetyScore}</span>
                 )}
-              </div>
-
-              <div className="form-group full-width">
-                <label htmlFor="status">Status</label>
-                <select
-                  id="status"
-                  value={form.status}
-                  onChange={(e) => updateField('status', e.target.value)}
-                >
-                  {DRIVER_STATUSES.map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
               </div>
             </div>
 
@@ -224,9 +249,9 @@ function SafetyOfficerDriversPage() {
                 onChange={(e) => setFilters((prev) => ({ ...prev, status: e.target.value }))}
               >
                 <option value="">All Statuses</option>
-                {DRIVER_STATUSES.map((status) => (
+                {FILTER_STATUSES.map((status) => (
                   <option key={status} value={status}>
-                    {status}
+                    {getDriverStatusLabel(status)}
                   </option>
                 ))}
               </select>
@@ -274,6 +299,7 @@ function SafetyOfficerDriversPage() {
                     <th>Contact</th>
                     <th>Safety Score</th>
                     <th>Status</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -285,7 +311,8 @@ function SafetyOfficerDriversPage() {
                       <td>{driver.licenseExpiryDate}</td>
                       <td>{driver.contactNumber}</td>
                       <td>{driver.safetyScore}</td>
-                      <td>{driver.status}</td>
+                      <td>{getDriverStatusLabel(driver.status)}</td>
+                      <td>{renderStatusActions(driver)}</td>
                     </tr>
                   ))}
                 </tbody>

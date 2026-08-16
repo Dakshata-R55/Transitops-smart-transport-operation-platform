@@ -1,6 +1,19 @@
 import { authFetch } from './apiClient'
 
-// Backend returns "name" → your page expects "fullName"
+export const DRIVER_STATUS_LABELS = {
+  AVAILABLE: 'Available',
+  ON_TRIP: 'On Trip',
+  OFF_DUTY: 'Off Duty',
+  SUSPENDED: 'Suspended',
+}
+
+// Statuses Safety Officer can set manually
+export const SAFETY_OFFICER_STATUS_OPTIONS = [
+  { value: 'AVAILABLE', label: 'Available' },
+  { value: 'OFF_DUTY', label: 'Off Duty' },
+  { value: 'SUSPENDED', label: 'Suspended' },
+]
+
 function mapDriverFromApi(driver) {
   return {
     id: driver.id,
@@ -15,7 +28,6 @@ function mapDriverFromApi(driver) {
   }
 }
 
-// Your form → backend create request
 function mapDriverToApi(driverData) {
   return {
     name: driverData.fullName,
@@ -25,6 +37,10 @@ function mapDriverToApi(driverData) {
     contactNumber: driverData.contactNumber,
     emergencyContact: driverData.emergencyContact || null,
   }
+}
+
+export function getDriverStatusLabel(status) {
+  return DRIVER_STATUS_LABELS[status] || status
 }
 
 export async function createDriver(driverData) {
@@ -52,4 +68,13 @@ export async function getDrivers(filters = {}) {
 export async function getAvailableDrivers() {
   const drivers = await getDrivers({ status: 'AVAILABLE' })
   return drivers
+}
+
+export async function updateDriverStatus(driverId, status) {
+  const response = await authFetch(`/api/drivers/${driverId}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  })
+
+  return mapDriverFromApi(response)
 }
