@@ -14,5 +14,10 @@ jwt:
   expiration-ms: 86400000
 analytics:
   revenue-per-km: 50
+app:
+  settings:
+    default-depot-name: Gandhinagar Depot GJ4
+    default-currency: INR
+    distance-unit: Kilometers
 server:
   port: 8080

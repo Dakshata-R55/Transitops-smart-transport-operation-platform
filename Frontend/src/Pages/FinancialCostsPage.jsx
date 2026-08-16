@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import AppLayout from '../Components/AppLayout'
 import { getVehicles } from '../services/vehicleService'
-import { createFuelLog, getFuelLogs } from '../services/fuelService'
+import { createFuelLog, getFuelLogs } from '../services/fuelServices'
 import {
   createExpense,
   getExpenses,

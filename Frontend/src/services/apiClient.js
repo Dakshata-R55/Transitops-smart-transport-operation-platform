@@ -54,9 +54,13 @@ export async function authFetch(path, options = {}) {
 
   const data = await parseResponse(response)
 
-  if (response.status === 401 || response.status === 403) {
+  if (response.status === 401) {
     clearAuth()
     throw new Error(getErrorMessage(data, 'Session expired. Please log in again.'))
+  }
+  
+  if (response.status === 403) {
+    throw new Error(getErrorMessage(data, 'You are not allowed to perform this action'))
   }
 
   if (!response.ok) {
