@@ -85,7 +85,7 @@ public class DashboardService {
 
         int fleetUtilization = activeVehicles == 0
                 ? 0
-                : Math.round((vehiclesOnTrip * 100.0) / activeVehicles);
+                : (int) Math.round((vehiclesOnTrip * 100.0) / activeVehicles);
 
         return DashboardResponse.builder()
                 .activeVehicles(activeVehicles)

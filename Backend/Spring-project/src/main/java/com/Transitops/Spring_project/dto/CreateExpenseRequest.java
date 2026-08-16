@@ -7,8 +7,15 @@ import java.math.BigDecimal;
 
 @Data
 public class CreateExpenseRequest {
+
     private Long tripId;
-    @NotNull private Long vehicleId;
-    @DecimalMin("0.0") private BigDecimal tollFee = BigDecimal.ZERO;
-    @DecimalMin("0.0") private BigDecimal otherFee = BigDecimal.ZERO;
+
+    @NotNull
+    private Long vehicleId;
+
+    @DecimalMin(value = "0.0")
+    private BigDecimal tollFee = BigDecimal.ZERO;
+
+    @DecimalMin(value = "0.0")
+    private BigDecimal otherFee = BigDecimal.ZERO;
 }

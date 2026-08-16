@@ -8,8 +8,18 @@ import java.time.LocalDate;
 
 @Data
 public class CreateFuelLogRequest {
-    @NotNull private Long vehicleId;
-    @NotNull private LocalDate logDate;
-    @NotNull @DecimalMin("0.0", inclusive = false) private BigDecimal liters;
-    @NotNull @DecimalMin("0.0", inclusive = false) private BigDecimal fuelCost;
+
+    @NotNull
+    private Long vehicleId;
+
+    @NotNull
+    private LocalDate logDate;
+
+    @NotNull
+    @DecimalMin(value = "0.0", inclusive = false)
+    private BigDecimal liters;
+
+    @NotNull
+    @DecimalMin(value = "0.0", inclusive = false)
+    private BigDecimal fuelCost;
 }
