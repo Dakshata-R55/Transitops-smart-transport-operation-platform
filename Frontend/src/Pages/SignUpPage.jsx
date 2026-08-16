@@ -4,22 +4,20 @@ import AuthLayout from '../Components/AuthLayout'
 import { signup } from '../services/authService'
 import { ROLES, ROLE_FIELDS } from '../config/roleSignupFields'
 
-// Empty starting values for ALL possible fields
 const EMPTY_FORM = {
-    fullName: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-    employeeId: '',
-    company: '',
-    fleetSize: '',
-    locationBranch: '',
-    safetyCertification: '',
-    departmentBranch: '',
-    department: '',
-    financeId: '',
-  }
+  fullName: '',
+  email: '',
+  phone: '',
+  password: '',
+  confirmPassword: '',
+  employeeId: '',
+  company: '',
+  fleetSize: '',
+  locationBranch: '',
+  safetyCertification: '',
+  departmentBranch: '',
+  department: '',
+}
 
 function SignUpPage() {
   const navigate = useNavigate()
@@ -30,27 +28,22 @@ function SignUpPage() {
   const [formError, setFormError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Update any input field
   function updateField(name, value) {
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  // When user changes role, clear old errors
   function handleRoleChange(newRole) {
     setRole(newRole)
     setErrors({})
   }
 
-  // Check if form data is valid before submit
   function validate() {
     const newErrors = {}
 
-    // Full name — required for everyone
     if (!form.fullName.trim()) {
       newErrors.fullName = 'Full name is required'
     }
 
-    // Password — required for everyone
     if (!form.password) {
       newErrors.password = 'Password is required'
     } else if (form.password.length < 8) {
@@ -63,7 +56,6 @@ function SignUpPage() {
       newErrors.confirmPassword = 'Passwords do not match'
     }
 
-    // Validate fields for the selected role
     const fields = ROLE_FIELDS[role] || []
 
     for (const field of fields) {
@@ -93,8 +85,6 @@ function SignUpPage() {
       }
     }
 
-    
-
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -107,7 +97,7 @@ function SignUpPage() {
       password: form.password,
       role,
     }
-  
+
     if (role === 'FLEET_MANAGER') {
       payload.fleetManagerProfile = {
         employeeId: form.employeeId.trim(),
@@ -116,9 +106,7 @@ function SignUpPage() {
         branch: form.locationBranch.trim(),
       }
     }
-  
-    // DISPATCHER — no extra profile, only basic fields above
-  
+
     if (role === 'SAFETY_OFFICER') {
       payload.safetyOfficerProfile = {
         employeeId: form.employeeId.trim(),
@@ -127,16 +115,15 @@ function SignUpPage() {
         department: form.departmentBranch.trim(),
       }
     }
-  
+
     if (role === 'FINANCIAL_ANALYST') {
       payload.financialAnalystProfile = {
         employeeId: form.employeeId.trim(),
         company: form.company.trim(),
         department: form.department.trim(),
-        financeId: form.financeId.trim(),
       }
     }
-  
+
     return payload
   }
 
@@ -160,7 +147,6 @@ function SignUpPage() {
     }
   }
 
-  // Render one input field (reused for all roles)
   function renderField(field) {
     const value = form[field.name] ?? ''
 
@@ -206,7 +192,6 @@ function SignUpPage() {
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
         {formError && <div className="form-error">{formError}</div>}
 
-        {/* STEP 1: Pick role first */}
         <div className="form-group">
           <label htmlFor="role">Role</label>
           <select
@@ -224,7 +209,6 @@ function SignUpPage() {
 
         <p className="form-section-title">{selectedRoleLabel} details</p>
 
-        {/* STEP 2: Full name — everyone */}
         <div className="form-group">
           <label htmlFor="fullName">Full Name</label>
           <input
@@ -241,10 +225,8 @@ function SignUpPage() {
           )}
         </div>
 
-        {/* STEP 3: Role-specific fields (changes when role changes) */}
         {ROLE_FIELDS[role].map((field) => renderField(field))}
 
-        {/* STEP 4: Password — everyone */}
         <div className="form-group">
           <label htmlFor="password">Password</label>
           <input

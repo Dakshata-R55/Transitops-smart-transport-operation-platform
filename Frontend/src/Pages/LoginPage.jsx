@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import AuthLayout from '../Components/AuthLayout'
 import { login } from '../services/authService'
 import { useAuth } from '../context/AuthContext'
+import { ROLES } from '../config/roleSignupFields'
 
 function LoginPage() {
   const navigate = useNavigate()
@@ -10,6 +11,7 @@ function LoginPage() {
   const successMessage = location.state?.message
   const { loginUser } = useAuth()
 
+  const [role, setRole] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState({})
@@ -18,6 +20,10 @@ function LoginPage() {
 
   function validate() {
     const newErrors = {}
+
+    if (!role) {
+      newErrors.role = 'Please select your role'
+    }
 
     if (!email.trim()) {
       newErrors.email = 'Email is required'
@@ -45,14 +51,25 @@ function LoginPage() {
 
     try {
       const data = await login(email.trim(), password)
-      loginUser(data)
 
+      if (data.role !== role) {
+        setFormError(
+          `This account is registered as ${formatRoleLabel(data.role)}, not ${formatRoleLabel(role)}.`
+        )
+        return
+      }
+
+      loginUser(data)
       navigate('/dashboard')
     } catch (error) {
       setFormError(error.message || 'Login failed. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  function formatRoleLabel(roleValue) {
+    return ROLES.find((r) => r.value === roleValue)?.label || roleValue
   }
 
   return (
@@ -76,6 +93,24 @@ function LoginPage() {
             {successMessage}
           </div>
         )}
+
+        <div className="form-group">
+          <label htmlFor="role">I am signing in as</label>
+          <select
+            id="role"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className={errors.role ? 'input-error' : ''}
+          >
+            <option value="">Select your role</option>
+            {ROLES.map((r) => (
+              <option key={r.value} value={r.value}>
+                {r.label}
+              </option>
+            ))}
+          </select>
+          {errors.role && <span className="field-error">{errors.role}</span>}
+        </div>
 
         <div className="form-group">
           <label htmlFor="email">Email</label>

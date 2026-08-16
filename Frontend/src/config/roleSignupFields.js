@@ -21,7 +21,6 @@ export const ROLES = [
       { name: 'locationBranch', label: 'Location / Branch', type: 'text', required: true },
     ],
   
-    // Dispatcher — simple signup only
     DISPATCHER: [
       { name: 'email', label: 'Email', type: 'email', required: true },
       { name: 'phone', label: 'Phone Number', type: 'tel', required: true },
@@ -42,6 +41,5 @@ export const ROLES = [
       { name: 'employeeId', label: 'Employee ID', type: 'text', required: true },
       { name: 'company', label: 'Company / Organization', type: 'text', required: true },
       { name: 'department', label: 'Department', type: 'text', required: true },
-      { name: 'financeId', label: 'Employee / Finance ID', type: 'text', required: true },
     ],
   }
