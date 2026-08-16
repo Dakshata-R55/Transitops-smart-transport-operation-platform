@@ -38,4 +38,12 @@ export function DispatcherRoute({ children }) {
   )
 }
 
+export function FinancialAnalystRoute({ children }) {
+  return (
+    <ProtectedRoute>
+      <RoleRoute allowedRoles={['FINANCIAL_ANALYST']}>{children}</RoleRoute>
+    </ProtectedRoute>
+  )
+}
+
 export default RoleRoute

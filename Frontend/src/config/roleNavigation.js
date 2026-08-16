@@ -14,6 +14,7 @@ export const NAV_BY_ROLE = {
     ],
     FINANCIAL_ANALYST: [
       { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Fuel & Expenses', path: '/finance/costs' },
     ],
   }
   

@@ -3,15 +3,17 @@ import LoginPage from './Pages/LoginPage'
 import SignUpPage from './Pages/SignUpPage'
 import DashboardPage from './Pages/DashboardPage'
 import FleetVehiclesPage from './Pages/FleetVehiclesPage'
+import FleetMaintenancePage from './Pages/FleetMaintenancePage'
 import SafetyOfficerDriversPage from './Pages/SafetyOfficerDriversPage'
 import DispatcherTripsPage from './Pages/DispatcherTripsPage'
+import FinancialCostsPage from './Pages/FinancialCostsPage'
 import UnauthorizedPage from './Pages/UnauthorizedPage'
 import ProtectedRoute from './Components/ProtectedRoute'
-import FleetMaintenancePage from './Pages/FleetMaintenancePage'
 import {
   FleetManagerRoute,
   SafetyOfficerRoute,
   DispatcherRoute,
+  FinancialAnalystRoute,
 } from './Components/RoleRoute'
 
 function App() {
@@ -40,15 +42,14 @@ function App() {
           }
         />
 
-<Route
-  path="/fleet/maintenance"
-  element={
-    <FleetManagerRoute>
-      <FleetMaintenancePage />
-    </FleetManagerRoute>
-  }
-/>
-
+        <Route
+          path="/fleet/maintenance"
+          element={
+            <FleetManagerRoute>
+              <FleetMaintenancePage />
+            </FleetManagerRoute>
+          }
+        />
 
         <Route
           path="/safety/drivers"
@@ -65,6 +66,15 @@ function App() {
             <DispatcherRoute>
               <DispatcherTripsPage />
             </DispatcherRoute>
+          }
+        />
+
+        <Route
+          path="/finance/costs"
+          element={
+            <FinancialAnalystRoute>
+              <FinancialCostsPage />
+            </FinancialAnalystRoute>
           }
         />
 
