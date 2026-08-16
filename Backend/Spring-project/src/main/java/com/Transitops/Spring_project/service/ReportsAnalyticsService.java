@@ -51,7 +51,7 @@ public class ReportsAnalyticsService {
                 .toList().size();
         int fleetUtilization = activeVehicles == 0
                 ? 0
-                : Math.round((vehiclesOnTrip * 100.0) / activeVehicles);
+                : (int) Math.round((vehiclesOnTrip * 100.0) / activeVehicles);
 
         // --- Fuel efficiency: distance / liters ---
         int totalDistanceKm = trips.stream()
