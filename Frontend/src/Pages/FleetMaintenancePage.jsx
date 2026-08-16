@@ -9,14 +9,14 @@ import {
   getMaintenanceStatusLabel,
   getVehicleStatusLabel,
 } from '../services/maintenanceService'
+import { SERVICE_TYPES, getServiceTypeLabel } from '../config/maintenanceTypes'
 import '../Styles/vehicles.css'
 
 const EMPTY_FORM = {
   vehicleId: '',
-  description: '',
-  startDate: '',
-  estimatedEndDate: '',
-  estimatedCost: '',
+  serviceType: '',
+  serviceDate: '',
+  cost: '',
 }
 
 function FleetMaintenancePage() {
@@ -62,8 +62,11 @@ function FleetMaintenancePage() {
     const newErrors = {}
 
     if (!form.vehicleId) newErrors.vehicleId = 'Select a vehicle'
-    if (!form.description.trim()) newErrors.description = 'Description is required'
-    if (!form.startDate) newErrors.startDate = 'Start date is required'
+    if (!form.serviceType) newErrors.serviceType = 'Select maintenance type'
+    if (!form.serviceDate) newErrors.serviceDate = 'Service date is required'
+    if (!form.cost || Number(form.cost) <= 0) {
+      newErrors.cost = 'Enter a valid cost greater than 0'
+    }
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -106,7 +109,7 @@ function FleetMaintenancePage() {
         <div className="vehicles-card">
           <h2>Add to Maintenance Log</h2>
           <p className="auth-subtitle">
-            Adding a vehicle here automatically marks it as In Shop (Under Maintenance).
+            Select which maintenance the vehicle was taken for. Vehicle status becomes In Shop automatically.
           </p>
           {formError && <div className="form-error">{formError}</div>}
 
@@ -134,52 +137,52 @@ function FleetMaintenancePage() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="startDate">Start Date</label>
-                <input
-                  id="startDate"
-                  type="date"
-                  value={form.startDate}
-                  onChange={(e) => updateField('startDate', e.target.value)}
-                  className={errors.startDate ? 'input-error' : ''}
-                />
-                {errors.startDate && (
-                  <span className="field-error">{errors.startDate}</span>
+                <label htmlFor="serviceType">Maintenance Type</label>
+                <select
+                  id="serviceType"
+                  value={form.serviceType}
+                  onChange={(e) => updateField('serviceType', e.target.value)}
+                  className={errors.serviceType ? 'input-error' : ''}
+                >
+                  <option value="">Select maintenance type</option>
+                  {SERVICE_TYPES.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+                {errors.serviceType && (
+                  <span className="field-error">{errors.serviceType}</span>
                 )}
               </div>
 
               <div className="form-group">
-                <label htmlFor="estimatedEndDate">Estimated End Date</label>
+                <label htmlFor="serviceDate">Service Date</label>
                 <input
-                  id="estimatedEndDate"
+                  id="serviceDate"
                   type="date"
-                  value={form.estimatedEndDate}
-                  onChange={(e) => updateField('estimatedEndDate', e.target.value)}
+                  value={form.serviceDate}
+                  onChange={(e) => updateField('serviceDate', e.target.value)}
+                  className={errors.serviceDate ? 'input-error' : ''}
                 />
+                {errors.serviceDate && (
+                  <span className="field-error">{errors.serviceDate}</span>
+                )}
               </div>
 
               <div className="form-group">
-                <label htmlFor="estimatedCost">Estimated Cost</label>
+                <label htmlFor="cost">Maintenance Cost (₹)</label>
                 <input
-                  id="estimatedCost"
+                  id="cost"
                   type="number"
-                  value={form.estimatedCost}
-                  onChange={(e) => updateField('estimatedCost', e.target.value)}
+                  value={form.cost}
+                  onChange={(e) => updateField('cost', e.target.value)}
+                  className={errors.cost ? 'input-error' : ''}
                 />
+                {errors.cost && (
+                  <span className="field-error">{errors.cost}</span>
+                )}
               </div>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="description">Description</label>
-              <textarea
-                id="description"
-                rows="3"
-                value={form.description}
-                onChange={(e) => updateField('description', e.target.value)}
-                className={errors.description ? 'input-error' : ''}
-              />
-              {errors.description && (
-                <span className="field-error">{errors.description}</span>
-              )}
             </div>
 
             <button type="submit" className="auth-button" disabled={isSubmitting}>
@@ -200,10 +203,9 @@ function FleetMaintenancePage() {
                 <thead>
                   <tr>
                     <th>Vehicle</th>
-                    <th>Description</th>
-                    <th>Start</th>
-                    <th>Est. End</th>
-                    <th>Cost</th>
+                    <th>Maintenance Type</th>
+                    <th>Service Date</th>
+                    <th>Cost (₹)</th>
                     <th>Maintenance Status</th>
                     <th>Vehicle Status</th>
                     <th>Action</th>
@@ -215,14 +217,13 @@ function FleetMaintenancePage() {
                       <td>
                         {record.vehicleRegistrationNo} — {record.vehicleName}
                       </td>
-                      <td>{record.description}</td>
-                      <td>{record.startDate}</td>
-                      <td>{record.estimatedEndDate || '-'}</td>
-                      <td>{record.estimatedCost ?? '-'}</td>
+                      <td>{getServiceTypeLabel(record.serviceType)}</td>
+                      <td>{record.serviceDate}</td>
+                      <td>{record.cost}</td>
                       <td>{getMaintenanceStatusLabel(record.status)}</td>
                       <td>{getVehicleStatusLabel(record.vehicleStatus)}</td>
                       <td>
-                        {record.status === 'OPEN' ? (
+                        {record.status === 'IN_SHOP' ? (
                           <button
                             type="button"
                             className="auth-button"

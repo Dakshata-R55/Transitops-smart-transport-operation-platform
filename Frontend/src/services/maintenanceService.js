@@ -7,11 +7,11 @@ function mapMaintenanceFromApi(record) {
     vehicleRegistrationNo: record.vehicleRegistrationNumber,
     vehicleName: record.vehicleNameModel,
     vehicleStatus: record.vehicleStatus,
-    description: record.description,
-    startDate: record.startDate,
-    estimatedEndDate: record.estimatedEndDate,
-    estimatedCost: record.estimatedCost,
+    serviceType: record.serviceType,
+    cost: record.cost,
+    serviceDate: record.serviceDate,
     status: record.status,
+    createdAt: record.createdAt,
   }
 }
 
@@ -20,12 +20,9 @@ export async function createMaintenance(maintenanceData) {
     method: 'POST',
     body: JSON.stringify({
       vehicleId: Number(maintenanceData.vehicleId),
-      description: maintenanceData.description,
-      startDate: maintenanceData.startDate,
-      estimatedEndDate: maintenanceData.estimatedEndDate || null,
-      estimatedCost: maintenanceData.estimatedCost
-        ? Number(maintenanceData.estimatedCost)
-        : null,
+      serviceType: maintenanceData.serviceType,
+      cost: Number(maintenanceData.cost),
+      serviceDate: maintenanceData.serviceDate,
     }),
   })
 
@@ -46,21 +43,21 @@ export async function completeMaintenance(id) {
 }
 
 export const MAINTENANCE_STATUS_LABELS = {
-    OPEN: 'In Shop (Under Maintenance)',
-    COMPLETED: 'Complete (Ready to Dispatch)',
-  }
-  
-  export const VEHICLE_STATUS_LABELS = {
-    AVAILABLE: 'Available (Ready to Dispatch)',
-    IN_SHOP: 'In Shop (Under Maintenance)',
-    ON_TRIP: 'On Trip',
-    RETIRED: 'Retired',
-  }
-  
-  export function getMaintenanceStatusLabel(status) {
-    return MAINTENANCE_STATUS_LABELS[status] || status
-  }
-  
-  export function getVehicleStatusLabel(status) {
-    return VEHICLE_STATUS_LABELS[status] || status
-  }
+  IN_SHOP: 'In Shop (Under Maintenance)',
+  COMPLETED: 'Complete (Ready to Dispatch)',
+}
+
+export const VEHICLE_STATUS_LABELS = {
+  AVAILABLE: 'Available (Ready to Dispatch)',
+  IN_SHOP: 'In Shop (Under Maintenance)',
+  ON_TRIP: 'On Trip',
+  RETIRED: 'Retired',
+}
+
+export function getMaintenanceStatusLabel(status) {
+  return MAINTENANCE_STATUS_LABELS[status] || status
+}
+
+export function getVehicleStatusLabel(status) {
+  return VEHICLE_STATUS_LABELS[status] || status
+}
