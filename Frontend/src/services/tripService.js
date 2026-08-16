@@ -1,14 +1,8 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+import { authFetch } from './apiClient'
 
 export const TRIP_STATUSES = ['DRAFT', 'DISPATCHED', 'COMPLETED', 'CANCELLED']
 
-// Allowed status changes
-const STATUS_FLOW = {
-  DRAFT: ['DISPATCHED', 'CANCELLED'],
-  DISPATCHED: ['COMPLETED', 'CANCELLED'],
-  COMPLETED: [],
-  CANCELLED: [],
-}
+const USE_MOCK = false
 
 let mockTrips = [
   {
@@ -24,21 +18,33 @@ let mockTrips = [
   },
 ]
 
-const USE_MOCK = true
+const STATUS_FLOW = {
+  DRAFT: ['DISPATCHED', 'CANCELLED'],
+  DISPATCHED: ['COMPLETED', 'CANCELLED'],
+  COMPLETED: [],
+  CANCELLED: [],
+}
 
 function canChangeStatus(currentStatus, nextStatus) {
   return STATUS_FLOW[currentStatus]?.includes(nextStatus)
+}
+
+function mapTripToApi(tripData) {
+  return {
+    source: tripData.source,
+    destination: tripData.destination,
+    vehicleId: Number(tripData.vehicleId),
+    driverId: Number(tripData.driverId),
+    cargoWeight: Number(tripData.cargoWeight),
+    plannedDistance: Number(tripData.plannedDistance),
+  }
 }
 
 export async function createTrip(tripData) {
   if (USE_MOCK) {
     const newTrip = {
       id: mockTrips.length + 1,
-      ...tripData,
-      cargoWeight: Number(tripData.cargoWeight),
-      plannedDistance: Number(tripData.plannedDistance),
-      vehicleId: Number(tripData.vehicleId),
-      driverId: Number(tripData.driverId),
+      ...mapTripToApi(tripData),
       status: 'DRAFT',
       createdAt: new Date().toISOString(),
     }
@@ -46,15 +52,10 @@ export async function createTrip(tripData) {
     return newTrip
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/trips`, {
+  return authFetch('/api/trips', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(tripData),
+    body: JSON.stringify(mapTripToApi(tripData)),
   })
-
-  const data = await response.json()
-  if (!response.ok) throw new Error(data?.message || 'Failed to create trip')
-  return data
 }
 
 export async function getTrips(filters = {}) {
@@ -64,16 +65,8 @@ export async function getTrips(filters = {}) {
     })
   }
 
-  const params = new URLSearchParams()
-  if (filters.status) params.append('status', filters.status)
-
-  const query = params.toString()
-  const url = `${API_BASE_URL}/api/trips${query ? `?${query}` : ''}`
-
-  const response = await fetch(url)
-  const data = await response.json()
-  if (!response.ok) throw new Error(data?.message || 'Failed to load trips')
-  return data
+  const query = filters.status ? `?status=${filters.status}` : ''
+  return authFetch(`/api/trips${query}`)
 }
 
 export async function updateTripStatus(tripId, nextStatus) {
@@ -87,13 +80,8 @@ export async function updateTripStatus(tripId, nextStatus) {
     return trip
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/trips/${tripId}/status`, {
+  return authFetch(`/api/trips/${tripId}/status`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status: nextStatus }),
   })
-
-  const data = await response.json()
-  if (!response.ok) throw new Error(data?.message || 'Failed to update trip status')
-  return data
 }
