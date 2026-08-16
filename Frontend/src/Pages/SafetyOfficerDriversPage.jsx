@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import AppLayout from '../Components/AppLayout'
 import { createDriver, getDrivers } from '../services/driverService'
 import '../Styles/vehicles.css'
 
@@ -18,8 +18,7 @@ const EMPTY_FORM = {
 }
 
 function SafetyOfficerDriversPage() {
-  const { user, logoutUser } = useAuth()
-  const navigate = useNavigate()
+  const { user } = useAuth()
 
   const [form, setForm] = useState(EMPTY_FORM)
   const [filters, setFilters] = useState({ status: '', licenseCategory: '' })
@@ -95,26 +94,12 @@ function SafetyOfficerDriversPage() {
     await loadDrivers(filters)
   }
 
-  function handleLogout() {
-    logoutUser()
-    navigate('/login')
-  }
-
   return (
-    <div className="vehicles-page">
+    <AppLayout
+      title="Safety Officer — Driver Profiles"
+      subtitle={`Logged in as ${user?.fullName || user?.email}`}
+    >
       <div className="vehicles-container">
-        <div className="vehicles-header">
-          <div>
-            <h1>Safety Officer — Driver Profiles</h1>
-            <p className="auth-subtitle">
-              Logged in as {user?.fullName || user?.email}
-            </p>
-          </div>
-          <button type="button" className="auth-button" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
-
         <div className="vehicles-card">
           <h2>Add Driver</h2>
           {formError && <div className="form-error">{formError}</div>}
@@ -153,7 +138,9 @@ function SafetyOfficerDriversPage() {
                   onChange={(e) => updateField('licenseCategory', e.target.value)}
                 >
                   {LICENSE_CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -212,7 +199,9 @@ function SafetyOfficerDriversPage() {
                   onChange={(e) => updateField('status', e.target.value)}
                 >
                   {DRIVER_STATUSES.map((status) => (
-                    <option key={status} value={status}>{status}</option>
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -236,7 +225,9 @@ function SafetyOfficerDriversPage() {
               >
                 <option value="">All Statuses</option>
                 {DRIVER_STATUSES.map((status) => (
-                  <option key={status} value={status}>{status}</option>
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
                 ))}
               </select>
             </div>
@@ -252,12 +243,16 @@ function SafetyOfficerDriversPage() {
               >
                 <option value="">All Categories</option>
                 {LICENSE_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
                 ))}
               </select>
             </div>
 
-            <button type="submit" className="auth-button">Apply Filter</button>
+            <button type="submit" className="auth-button">
+              Apply Filter
+            </button>
           </form>
         </div>
 
@@ -299,7 +294,7 @@ function SafetyOfficerDriversPage() {
           )}
         </div>
       </div>
-    </div>
+    </AppLayout>
   )
 }
 

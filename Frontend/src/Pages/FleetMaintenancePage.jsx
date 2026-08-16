@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import AppLayout from '../Components/AppLayout'
 import { getVehicles } from '../services/vehicleService'
 import {
   createMaintenance,
   getMaintenanceRecords,
   completeMaintenance,
+  getMaintenanceStatusLabel,
+  getVehicleStatusLabel,
 } from '../services/maintenanceService'
 import '../Styles/vehicles.css'
 
@@ -18,8 +20,7 @@ const EMPTY_FORM = {
 }
 
 function FleetMaintenancePage() {
-  const { user, logoutUser } = useAuth()
-  const navigate = useNavigate()
+  const { user } = useAuth()
 
   const [form, setForm] = useState(EMPTY_FORM)
   const [vehicles, setVehicles] = useState([])
@@ -96,35 +97,16 @@ function FleetMaintenancePage() {
     }
   }
 
-  function handleLogout() {
-    logoutUser()
-    navigate('/login')
-  }
-
   return (
-    <div className="vehicles-page">
+    <AppLayout
+      title="Fleet Manager — Maintenance Log"
+      subtitle={`Logged in as ${user?.fullName || user?.email}`}
+    >
       <div className="vehicles-container">
-        <div className="vehicles-header">
-          <div>
-            <h1>Fleet Manager — Maintenance Log</h1>
-            <p className="auth-subtitle">
-              Logged in as {user?.fullName || user?.email}
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <Link to="/fleet/vehicles" className="auth-button" style={{ textDecoration: 'none' }}>
-              Vehicles
-            </Link>
-            <button type="button" className="auth-button" onClick={handleLogout}>
-              Logout
-            </button>
-          </div>
-        </div>
-
         <div className="vehicles-card">
           <h2>Add to Maintenance Log</h2>
           <p className="auth-subtitle">
-            Adding a vehicle here automatically sets its status to IN_SHOP.
+            Adding a vehicle here automatically marks it as In Shop (Under Maintenance).
           </p>
           {formError && <div className="form-error">{formError}</div>}
 
@@ -141,7 +123,8 @@ function FleetMaintenancePage() {
                   <option value="">Select vehicle</option>
                   {selectableVehicles.map((vehicle) => (
                     <option key={vehicle.id} value={vehicle.id}>
-                      {vehicle.registrationNo} — {vehicle.name} ({vehicle.status})
+                      {vehicle.registrationNo} — {vehicle.name} (
+                      {getVehicleStatusLabel(vehicle.status)})
                     </option>
                   ))}
                 </select>
@@ -221,7 +204,7 @@ function FleetMaintenancePage() {
                     <th>Start</th>
                     <th>Est. End</th>
                     <th>Cost</th>
-                    <th>Record Status</th>
+                    <th>Maintenance Status</th>
                     <th>Vehicle Status</th>
                     <th>Action</th>
                   </tr>
@@ -236,8 +219,8 @@ function FleetMaintenancePage() {
                       <td>{record.startDate}</td>
                       <td>{record.estimatedEndDate || '-'}</td>
                       <td>{record.estimatedCost ?? '-'}</td>
-                      <td>{record.status}</td>
-                      <td>{record.vehicleStatus}</td>
+                      <td>{getMaintenanceStatusLabel(record.status)}</td>
+                      <td>{getVehicleStatusLabel(record.vehicleStatus)}</td>
                       <td>
                         {record.status === 'OPEN' ? (
                           <button
@@ -245,7 +228,7 @@ function FleetMaintenancePage() {
                             className="auth-button"
                             onClick={() => handleComplete(record.id)}
                           >
-                            Mark Complete
+                            Mark Ready to Dispatch
                           </button>
                         ) : (
                           '-'
@@ -259,7 +242,7 @@ function FleetMaintenancePage() {
           )}
         </div>
       </div>
-    </div>
+    </AppLayout>
   )
 }
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import AppLayout from '../Components/AppLayout'
 import {
   fetchDashboardData,
   computeDashboardKpis,
@@ -8,7 +8,9 @@ import {
   VEHICLE_STATUSES,
   REGIONS,
 } from '../services/dashboardService'
+import { getVehicleStatusLabel } from '../services/maintenanceService'
 import '../Styles/dashboard.css'
+import '../Styles/vehicles.css'
 
 const EMPTY_FILTERS = {
   type: '',
@@ -17,8 +19,7 @@ const EMPTY_FILTERS = {
 }
 
 function DashboardPage() {
-  const { user, role, logoutUser } = useAuth()
-  const navigate = useNavigate()
+  const { user } = useAuth()
 
   const [filters, setFilters] = useState(EMPTY_FILTERS)
   const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS)
@@ -62,186 +63,149 @@ function DashboardPage() {
     setAppliedFilters(EMPTY_FILTERS)
   }
 
-  function handleLogout() {
-    logoutUser()
-    navigate('/login')
-  }
-
   return (
-    <div className="dashboard-page">
-      <div className="dashboard-container">
-        <div className="dashboard-header">
-          <div>
-            <h1>Operations Dashboard</h1>
-            <p className="auth-subtitle">
-              Welcome, {user?.fullName || user?.email} · Role: {role}
-            </p>
-          </div>
-          <button type="button" className="auth-button" onClick={handleLogout}>
-            Logout
-          </button>
+    <AppLayout
+      title="Operations Dashboard"
+      subtitle={`Welcome, ${user?.fullName || user?.email}`}
+    >
+      {pageError && <div className="form-error">{pageError}</div>}
+
+      {loadErrors.length > 0 && (
+        <div className="info-banner">
+          {loadErrors.map((message) => (
+            <div key={message}>{message}</div>
+          ))}
         </div>
+      )}
 
-        {pageError && <div className="form-error">{pageError}</div>}
-
-        {loadErrors.length > 0 && (
-          <div className="info-banner">
-            {loadErrors.map((message) => (
-              <div key={message}>{message}</div>
-            ))}
-          </div>
-        )}
-
-        <div className="dashboard-card">
-          <h2>Filters</h2>
-          <form className="dashboard-filters" onSubmit={handleApplyFilters}>
-            <div className="form-group">
-              <label htmlFor="filterType">Vehicle Type</label>
-              <select
-                id="filterType"
-                value={filters.type}
-                onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, type: e.target.value }))
-                }
-              >
-                <option value="">All Types</option>
-                {VEHICLE_TYPES.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="filterStatus">Vehicle Status</label>
-              <select
-                id="filterStatus"
-                value={filters.status}
-                onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, status: e.target.value }))
-                }
-              >
-                <option value="">All Statuses</option>
-                {VEHICLE_STATUSES.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="filterRegion">Region</label>
-              <select
-                id="filterRegion"
-                value={filters.region}
-                onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, region: e.target.value }))
-                }
-              >
-                <option value="">All Regions</option>
-                {REGIONS.map((region) => (
-                  <option key={region} value={region}>
-                    {region}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button type="submit" className="auth-button">
-              Apply Filters
-            </button>
-            <button
-              type="button"
-              className="auth-button"
-              onClick={handleResetFilters}
+      <div className="dashboard-card">
+        <h2>Filters</h2>
+        <form className="dashboard-filters" onSubmit={handleApplyFilters}>
+          <div className="form-group">
+            <label htmlFor="filterType">Vehicle Type</label>
+            <select
+              id="filterType"
+              value={filters.type}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, type: e.target.value }))
+              }
             >
-              Reset
-            </button>
-          </form>
+              <option value="">All Types</option>
+              {VEHICLE_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="filterStatus">Vehicle Status</label>
+            <select
+              id="filterStatus"
+              value={filters.status}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, status: e.target.value }))
+              }
+            >
+              <option value="">All Statuses</option>
+              {VEHICLE_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {getVehicleStatusLabel(status)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="filterRegion">Region</label>
+            <select
+              id="filterRegion"
+              value={filters.region}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, region: e.target.value }))
+              }
+            >
+              <option value="">All Regions</option>
+              {REGIONS.map((region) => (
+                <option key={region} value={region}>
+                  {region}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button type="submit" className="auth-button">
+            Apply Filters
+          </button>
+          <button
+            type="button"
+            className="auth-button"
+            onClick={handleResetFilters}
+          >
+            Reset
+          </button>
+          <button
+            type="button"
+            className="auth-button"
+            onClick={loadDashboardData}
+          >
+            Refresh
+          </button>
+        </form>
+      </div>
+
+      <div className="kpi-grid">
+        <div className="kpi-card">
+          <div className="kpi-label">Active Vehicles</div>
+          <div className="kpi-value">
+            {isLoading ? '...' : kpis.activeVehicles}
+          </div>
         </div>
 
-        <div className="kpi-grid">
-          <div className="kpi-card">
-            <div className="kpi-label">Active Vehicles</div>
-            <div className="kpi-value">
-              {isLoading ? '...' : kpis.activeVehicles}
-            </div>
-          </div>
-
-          <div className="kpi-card">
-            <div className="kpi-label">Available Vehicles</div>
-            <div className="kpi-value">
-              {isLoading ? '...' : kpis.availableVehicles}
-            </div>
-          </div>
-
-          <div className="kpi-card">
-            <div className="kpi-label">Vehicles in Maintenance</div>
-            <div className="kpi-value">
-              {isLoading ? '...' : kpis.vehiclesInMaintenance}
-            </div>
-          </div>
-
-          <div className="kpi-card">
-            <div className="kpi-label">Active Trips</div>
-            <div className="kpi-value">
-              {isLoading ? '...' : kpis.activeTrips}
-            </div>
-          </div>
-
-          <div className="kpi-card">
-            <div className="kpi-label">Pending Trips</div>
-            <div className="kpi-value">
-              {isLoading ? '...' : kpis.pendingTrips}
-            </div>
-          </div>
-
-          <div className="kpi-card">
-            <div className="kpi-label">Drivers On Duty</div>
-            <div className="kpi-value">
-              {isLoading ? '...' : kpis.driversOnDuty}
-            </div>
-          </div>
-
-          <div className="kpi-card">
-            <div className="kpi-label">Fleet Utilization</div>
-            <div className={`kpi-value ${!isLoading ? 'percent' : ''}`}>
-              {isLoading ? '...' : kpis.fleetUtilization}
-            </div>
+        <div className="kpi-card">
+          <div className="kpi-label">Available Vehicles</div>
+          <div className="kpi-value">
+            {isLoading ? '...' : kpis.availableVehicles}
           </div>
         </div>
 
-        <div className="dashboard-card">
-          <h2>Quick Links</h2>
-          <div className="quick-links">
-            {role === 'FLEET_MANAGER' && (
-              <>
-                <Link to="/fleet/vehicles" className="auth-button" style={{ textDecoration: 'none' }}>
-                  Manage Vehicles
-                </Link>
-                <Link to="/fleet/maintenance" className="auth-button" style={{ textDecoration: 'none' }}>
-                  Maintenance Log
-                </Link>
-              </>
-            )}
+        <div className="kpi-card">
+          <div className="kpi-label">Vehicles in Maintenance</div>
+          <div className="kpi-value">
+            {isLoading ? '...' : kpis.vehiclesInMaintenance}
+          </div>
+        </div>
 
-            {role === 'SAFETY_OFFICER' && (
-              <Link to="/safety/drivers" className="auth-button" style={{ textDecoration: 'none' }}>
-                Manage Drivers
-              </Link>
-            )}
+        <div className="kpi-card">
+          <div className="kpi-label">Active Trips</div>
+          <div className="kpi-value">
+            {isLoading ? '...' : kpis.activeTrips}
+          </div>
+        </div>
 
-            {role === 'DISPATCHER' && (
-              <Link to="/dispatcher/trips" className="auth-button" style={{ textDecoration: 'none' }}>
-                Manage Trips
-              </Link>
-            )}
+        <div className="kpi-card">
+          <div className="kpi-label">Pending Trips</div>
+          <div className="kpi-value">
+            {isLoading ? '...' : kpis.pendingTrips}
+          </div>
+        </div>
+
+        <div className="kpi-card">
+          <div className="kpi-label">Drivers On Duty</div>
+          <div className="kpi-value">
+            {isLoading ? '...' : kpis.driversOnDuty}
+          </div>
+        </div>
+
+        <div className="kpi-card">
+          <div className="kpi-label">Fleet Utilization</div>
+          <div className={`kpi-value ${!isLoading ? 'percent' : ''}`}>
+            {isLoading ? '...' : kpis.fleetUtilization}
           </div>
         </div>
       </div>
-    </div>
+    </AppLayout>
   )
 }
 
